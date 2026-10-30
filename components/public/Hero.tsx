@@ -82,67 +82,132 @@ export default function Hero({
     return () => clearInterval(interval);
   }, [timer]);
 
-  // Headline characters for staggered reveal
   const solidChars = title.toUpperCase().split('');
   const outlinedChars = String(year).split('');
 
   return (
-    <section className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-8 pt-12 sm:pt-20 pb-16 flex flex-col justify-start text-left">
-      {/* 1. Tiny Mono Metadata Label */}
-      <div className="font-mono text-xs sm:text-sm text-offwhite/50 uppercase tracking-widest mb-4 sm:mb-6">
+    <section className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-8 pt-8 sm:pt-14 pb-16 flex flex-col justify-start text-left">
+      {/* 1. Architectural Blueprint Corner Crosshairs */}
+      <div className="flex items-center justify-between text-yellow font-mono text-xs select-none mb-3">
+        <span>+ [SPEC: AGENT-ORCHESTRATION-V2.6]</span>
+        <span className="hidden sm:inline">[COORD: 12.9716° N / 77.5946° E] +</span>
+      </div>
+
+      {/* 2. Top Mono Metadata Stamp */}
+      <div className="font-mono text-xs sm:text-sm text-offwhite/50 uppercase tracking-widest mb-4">
         {collegeName} / 24-HOUR HACKATHON / {year}
       </div>
 
-      {/* 2. Huge Asymmetric Left-Aligned Headline */}
-      <h1 className="font-display font-black text-[15vw] sm:text-[16vw] lg:text-[180px] leading-[0.88] tracking-tighter text-offwhite select-none">
-        {/* Solid Characters with staggered animation delay */}
-        <span className="inline-block mr-2 sm:mr-6">
-          {solidChars.map((char, index) => (
-            <span
-              key={index}
-              className="inline-block opacity-0 animate-fade-in"
-              style={{ animationDelay: `${index * 40}ms`, animationFillMode: 'forwards' }}
-            >
-              {char}
+      {/* 3. Main Grid: Headline + Live Agent Telemetry Terminal Widget */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start my-2">
+        {/* Left Column: Massive Headline */}
+        <div className="lg:col-span-8">
+          <h1 className="font-display font-black text-[15vw] sm:text-[14vw] lg:text-[160px] leading-[0.88] tracking-tighter text-offwhite select-none">
+            {/* Solid Title Letters */}
+            <span className="inline-block mr-2 sm:mr-5">
+              {solidChars.map((char, index) => (
+                <span
+                  key={index}
+                  className="char-fade"
+                  style={{ animationDelay: `${index * 45}ms` }}
+                >
+                  {char}
+                </span>
+              ))}
             </span>
-          ))}
-        </span>
 
-        {/* Outlined Year Characters */}
-        <span className="inline-block text-outline">
-          {outlinedChars.map((char, index) => (
-            <span
-              key={index}
-              className="inline-block opacity-0 animate-fade-in"
-              style={{
-                animationDelay: `${(solidChars.length + index) * 40}ms`,
-                animationFillMode: 'forwards',
-              }}
-            >
-              {char}
+            {/* Outlined Year Characters */}
+            <span className="inline-block text-outline">
+              {outlinedChars.map((char, index) => (
+                <span
+                  key={index}
+                  className="char-fade"
+                  style={{
+                    animationDelay: `${(solidChars.length + index) * 45}ms`,
+                  }}
+                >
+                  {char}
+                </span>
+              ))}
             </span>
-          ))}
-        </span>
-      </h1>
+          </h1>
 
-      {/* 3. Dimension-Line Technical Decoration */}
-      <div className="mt-6 mb-4 font-mono text-xs sm:text-sm text-offwhite/40 tracking-widest select-none">
-        ←—— 24 HRS ——→
+          {/* Architectural Dimension Caliper */}
+          <div className="mt-6 mb-4 font-mono text-xs sm:text-sm text-offwhite/50 tracking-wider flex items-center gap-2 select-none">
+            <span className="text-yellow">|←</span>
+            <span className="h-[1px] flex-1 bg-line max-w-[120px]" />
+            <span>24-HOUR AUTONOMOUS SPRINT // 1,440 MIN</span>
+            <span className="h-[1px] flex-1 bg-line max-w-[120px]" />
+            <span className="text-yellow">→|</span>
+          </div>
+
+          {/* Casual Student Voice Subhead */}
+          <p className="max-w-2xl font-mono text-xs sm:text-sm md:text-base text-offwhite/80 leading-relaxed">
+            24 hours. Build an agent that actually does something. Free food, loud music, one trophy.
+          </p>
+
+          {/* Fast-Spec Feature Badges */}
+          <div className="mt-5 flex flex-wrap gap-2.5 font-mono text-[11px] text-offwhite/70">
+            <span className="px-2.5 py-1 border border-line bg-white/[0.02]">
+              [ 01/ALL BRANCHES ELIGIBLE ]
+            </span>
+            <span className="px-2.5 py-1 border border-line bg-white/[0.02]">
+              [ 02/ZERO REGISTRATION FEE ]
+            </span>
+            <span className="px-2.5 py-1 border border-line bg-white/[0.02]">
+              [ 03/HARDWARE DEV KITS ]
+            </span>
+          </div>
+        </div>
+
+        {/* Right Column: Live Telemetry Terminal HUD Box */}
+        <div className="lg:col-span-4 border border-line p-5 sm:p-6 bg-[#0c223f] shadow-hard-sm relative">
+          {/* Terminal Title Bar */}
+          <div className="flex items-center justify-between pb-3 border-b border-line mb-4 font-mono text-[11px]">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-yellow animate-pulse" />
+              <span className="text-yellow font-bold uppercase tracking-wider">&gt;_ SYSTEM TELEMETRY</span>
+            </div>
+            <span className="text-offwhite/40">[LIVE]</span>
+          </div>
+
+          {/* Terminal Diagnostic Feed */}
+          <div className="space-y-2.5 font-mono text-xs text-offwhite/80 leading-relaxed">
+            <div className="flex items-start gap-2">
+              <span className="text-yellow">&gt;</span>
+              <span>
+                <strong className="text-offwhite">CLUSTER:</strong> 40 autonomous agents on-grid
+              </span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-yellow">&gt;</span>
+              <span>
+                <strong className="text-offwhite">BOUNTY:</strong> ₹1,00,000 cash pool + cloud credits
+              </span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-yellow">&gt;</span>
+              <span>
+                <strong className="text-offwhite">AMENITIES:</strong> Unlimited caffeine, snacks &amp; 24h WiFi
+              </span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-yellow">&gt;</span>
+              <span>
+                <strong className="text-offwhite">MANDATE:</strong> Runnable CLI / agents, zero slides
+              </span>
+            </div>
+            {regCount > 0 && (
+              <div className="pt-2 border-t border-line text-yellow font-bold flex items-center justify-between">
+                <span>REGISTERED TEAMS:</span>
+                <span>{regCount} / 150</span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* 4. Casual Student Voice Subhead */}
-      <p className="max-w-2xl font-mono text-sm sm:text-base text-offwhite/80 leading-relaxed">
-        24 hours. Build an agent that actually does something. Free food, loud music, one trophy.
-      </p>
-
-      {/* 5. Registered Counter (Only shown if count >= 10 per blueprint spec) */}
-      {regCount >= 10 && (
-        <div className="mt-4 font-mono text-xs text-yellow tracking-wider">
-          [ {regCount} TEAMS REGISTERED AND CONFIRMED ]
-        </div>
-      )}
-
-      {/* 6. CTAs */}
+      {/* 4. Action CTAs */}
       <div className="mt-8 flex flex-wrap items-center gap-6 font-mono text-xs sm:text-sm">
         {registrationOpen ? (
           <Link
@@ -165,8 +230,8 @@ export default function Hero({
         </a>
       </div>
 
-      {/* 7. Minimalist Plain Mono Countdown Row */}
-      <div className="mt-16 pt-8 border-t border-line font-mono flex items-center flex-wrap gap-4 text-offwhite">
+      {/* 5. Minimalist Plain Mono Countdown Row */}
+      <div className="mt-14 pt-8 border-t border-line font-mono flex items-center justify-between flex-wrap gap-4 text-offwhite">
         {timeLeft.status === 'live' ? (
           <div className="text-xl sm:text-2xl font-bold text-yellow tracking-widest">
             HACKING IS LIVE
@@ -201,6 +266,10 @@ export default function Hero({
             </div>
           </div>
         )}
+
+        <div className="text-xs text-offwhite/50 tracking-widest hidden md:block">
+          [ 150 SEATS MAX // IN-PERSON // IST (+05:30) ]
+        </div>
       </div>
     </section>
   );

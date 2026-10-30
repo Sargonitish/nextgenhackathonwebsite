@@ -13,7 +13,6 @@ module.exports = {
         offwhite: '#F2EFE6',
         yellow: '#FFD23F',
         line: 'rgba(242, 239, 230, 0.2)',
-        // Backwards compatibility with admin / dynamic overrides
         background: '#0B1F3A',
         primary: {
           DEFAULT: '#FFD23F',
@@ -42,6 +41,15 @@ module.exports = {
         'hard-sm': '4px 4px 0 rgba(242, 239, 230, 0.3)',
         'hard-dark': '4px 4px 0 #0B1F3A',
         'hard-hover': '2px 2px 0 #FFD23F',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
     },
   },

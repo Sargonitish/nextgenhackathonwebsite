@@ -60,6 +60,24 @@ body.custom-cursor-active textarea {
   }
 }
 
+/* Character Staggered Fade-in Animation */
+@keyframes charFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.char-fade {
+  display: inline-block;
+  opacity: 0;
+  animation: charFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Hard offset shadow utility */
 .shadow-hard {
   box-shadow: 6px 6px 0 #FFD23F;
