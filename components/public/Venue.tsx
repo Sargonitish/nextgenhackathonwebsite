@@ -1,58 +1,63 @@
-import { MapPin, Navigation } from 'lucide-react';
-
 interface VenueProps {
-  name: string;
-  address: string;
+  name?: string;
+  address?: string;
   mapEmbedUrl?: string;
 }
 
-export default function Venue({ name, address, mapEmbedUrl }: VenueProps) {
-  if (!name && !address) return null;
-
+export default function Venue({
+  name = 'MAIN AUDITORIUM & INNOVATION HUB',
+  address = 'CAMPUS RESEARCH PARK, BLOCK 4, 3RD FLOOR',
+  mapEmbedUrl,
+}: VenueProps) {
   return (
-    <section id="venue" className="py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto z-10 relative">
-      <div className="rounded-3xl border border-white/10 bg-[#0e0f18]/85 backdrop-blur-2xl p-8 sm:p-12 shadow-2xl relative overflow-hidden group hover:border-primary/30 transition-all duration-300">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          {/* Details */}
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary font-mono text-xs font-semibold uppercase tracking-widest mb-4">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>VENUE & LOCATION</span>
-            </div>
+    <section id="venue" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
+      {/* Section Label */}
+      <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-10">
+        08 / VENUE
+      </div>
 
-            <h2 className="font-mono text-2xl sm:text-4xl font-black text-white mb-4 tracking-tight">
-              {name || 'Hackathon Arena'}
-            </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        {/* Left Column: Details */}
+        <div className="lg:col-span-7 space-y-4">
+          <h2 className="font-display font-black text-3xl sm:text-5xl text-offwhite tracking-tight">
+            {name}
+          </h2>
 
-            <p className="text-neutral-300 font-sans text-sm sm:text-base leading-relaxed mb-6">
-              {address}
-            </p>
+          <p className="font-mono text-xs sm:text-sm text-offwhite/70 tracking-wider">
+            {address}
+          </p>
 
-            <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 font-mono text-xs text-neutral-300">
-              <Navigation className="w-4 h-4 text-primary shrink-0" />
-              <span>Campus Security Check-in Gate 1 • Free Dedicated Parking</span>
-            </div>
+          <div className="pt-4">
+            <a
+              href="https://maps.google.com"
+              target="_blank"
+              rel="noreferrer"
+              className="font-mono text-xs sm:text-sm text-yellow hover:underline underline-offset-4 tracking-wider inline-flex items-center gap-1.5"
+            >
+              <span>Get directions</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Right Column: Outlined Rectangle with Center Crosshair Pin */}
+        <div className="lg:col-span-5 h-64 sm:h-72 border border-line bg-white/[0.01] flex items-center justify-center relative overflow-hidden">
+          {/* Subtle blueprint grid coordinates */}
+          <div className="absolute top-3 left-3 font-mono text-[10px] text-offwhite/30">
+            LAT: 12.9716° N / LON: 77.5946° E
+          </div>
+          <div className="absolute bottom-3 right-3 font-mono text-[10px] text-offwhite/30">
+            [ SECTOR A-4 ]
           </div>
 
-          {/* Map Embed Iframe */}
-          <div className="h-64 sm:h-80 w-full rounded-2xl overflow-hidden border border-white/15 bg-black/60 shadow-inner">
-            {mapEmbedUrl ? (
-              <iframe
-                src={mapEmbedUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="grayscale contrast-125 opacity-85 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
-              />
-            ) : (
-              <div className="h-full w-full flex flex-col items-center justify-center font-mono text-xs text-neutral-500">
-                <MapPin className="w-6 h-6 mb-2 text-neutral-600" />
-                <span>Map preview coordinates not configured yet</span>
-              </div>
-            )}
+          {/* Center Crosshair '+' Pin */}
+          <div className="flex flex-col items-center gap-2 select-none">
+            <div className="w-8 h-8 flex items-center justify-center text-yellow font-mono text-2xl font-light">
+              +
+            </div>
+            <span className="font-mono text-[11px] text-offwhite/50 tracking-widest uppercase">
+              HACKATHON ARENA PIN
+            </span>
           </div>
         </div>
       </div>

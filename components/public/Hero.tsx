@@ -2,37 +2,44 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import FlipCountdown from './FlipCountdown';
-import { TimerState } from '@/lib/timer';
-import { ArrowRight, Flame, Calendar, Sparkles, Terminal } from 'lucide-react';
+import { TimerState, computeTimerView } from '@/lib/timer';
 
 interface HeroProps {
-  title: string;
-  tagline: string;
-  typingWords?: string[];
+  title?: string;
+  tagline?: string;
+  collegeName?: string;
+  year?: number;
   timer?: TimerState | null;
   registrationOpen?: boolean;
   eventId?: string;
 }
 
 export default function Hero({
-  title,
-  tagline,
-  typingWords = ['Build Autonomous Agents', 'Ship Scalable Web3', 'Innovate with AI', 'Disrupt with Code'],
+  title = 'HACKX',
+  collegeName = 'COLLEGE OF ENGINEERING',
+  year = 2026,
   timer,
   registrationOpen = true,
   eventId,
 }: HeroProps) {
-  // Typing animation state
-  const [wordIndex, setWordIndex] = useState(0);
-  const [displayedText, setDisplayedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // Live registration counter
   const [regCount, setRegCount] = useState<number>(0);
+  const [timeLeft, setTimeLeft] = useState<{
+    days: string;
+    hours: string;
+    minutes: string;
+    seconds: string;
+    status: 'upcoming' | 'live' | 'ended';
+  }>({
+    days: '00',
+    hours: '00',
+    minutes: '00',
+    seconds: '00',
+    status: 'upcoming',
+  });
 
+  // Fetch registered stats
   useEffect(() => {
-    async function loadStats() {
+    async function fetchStats() {
       try {
         const res = await fetch('/api/public/stats');
         if (res.ok) {
@@ -41,106 +48,159 @@ export default function Hero({
         }
       } catch {}
     }
-    loadStats();
-    const interval = setInterval(loadStats, 30000);
-    return () => clearInterval(interval);
+    fetchStats();
   }, []);
 
-  // Typing effect loop
+  // Compute countdown in IST
   useEffect(() => {
-    if (typingWords.length === 0) return;
+    const updateCountdown = () => {
+      const view = computeTimerView(timer, Date.now());
 
-    const currentWord = typingWords[wordIndex % typingWords.length];
-    const typingSpeed = isDeleting ? 35 : 85;
-
-    const timerTimeout = setTimeout(() => {
-      if (!isDeleting) {
-        setDisplayedText(currentWord.substring(0, displayedText.length + 1));
-        if (displayedText.length + 1 === currentWord.length) {
-          setTimeout(() => setIsDeleting(true), 1600); // Pause before deleting
-        }
+      if (view.status === 'running') {
+        setTimeLeft({
+          days: String(view.days).padStart(2, '0'),
+          hours: String(view.hours).padStart(2, '0'),
+          minutes: String(view.minutes).padStart(2, '0'),
+          seconds: String(view.seconds).padStart(2, '0'),
+          status: 'live',
+        });
+      } else if (view.status === 'ended') {
+        setTimeLeft((prev) => ({ ...prev, status: 'ended' }));
       } else {
-        setDisplayedText(currentWord.substring(0, displayedText.length - 1));
-        if (displayedText.length - 1 === 0) {
-          setIsDeleting(false);
-          setWordIndex((prev) => prev + 1);
-        }
+        setTimeLeft({
+          days: String(view.days).padStart(2, '0'),
+          hours: String(view.hours).padStart(2, '0'),
+          minutes: String(view.minutes).padStart(2, '0'),
+          seconds: String(view.seconds).padStart(2, '0'),
+          status: 'upcoming',
+        });
       }
-    }, typingSpeed);
+    };
 
-    return () => clearTimeout(timerTimeout);
-  }, [displayedText, isDeleting, wordIndex, typingWords]);
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  // Headline characters for staggered reveal
+  const solidChars = title.toUpperCase().split('');
+  const outlinedChars = String(year).split('');
 
   return (
-    <section className="relative min-h-[88dvh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-12 text-center z-10">
-      {/* 1. Live Stats Pill */}
-      {regCount > 0 ? (
-        <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary font-mono text-xs font-semibold shadow-[0_0_20px_rgba(0,255,157,0.15)] backdrop-blur-md animate-fade-in">
-          <Flame className="w-4 h-4 text-amber-400 animate-bounce" />
-          <span>🔥 {regCount} teams registered and confirmed</span>
-        </div>
-      ) : (
-        <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary font-mono text-xs font-semibold shadow-[0_0_20px_rgba(0,255,157,0.15)] backdrop-blur-md animate-fade-in">
-          <Sparkles className="w-3.5 h-3.5 text-primary" />
-          <span>Flagship Collegiate Hackathon • Edition 2026</span>
-        </div>
-      )}
+    <section className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-8 pt-12 sm:pt-20 pb-16 flex flex-col justify-start text-left">
+      {/* 1. Tiny Mono Metadata Label */}
+      <div className="font-mono text-xs sm:text-sm text-offwhite/50 uppercase tracking-widest mb-4 sm:mb-6">
+        {collegeName} / 24-HOUR HACKATHON / {year}
+      </div>
 
-      {/* 2. Main Title */}
-      <h1 className="font-mono text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white max-w-5xl leading-tight">
-        <span className="bg-gradient-to-r from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-          {title}
+      {/* 2. Huge Asymmetric Left-Aligned Headline */}
+      <h1 className="font-display font-black text-[15vw] sm:text-[16vw] lg:text-[180px] leading-[0.88] tracking-tighter text-offwhite select-none">
+        {/* Solid Characters with staggered animation delay */}
+        <span className="inline-block mr-2 sm:mr-6">
+          {solidChars.map((char, index) => (
+            <span
+              key={index}
+              className="inline-block opacity-0 animate-fade-in"
+              style={{ animationDelay: `${index * 40}ms`, animationFillMode: 'forwards' }}
+            >
+              {char}
+            </span>
+          ))}
+        </span>
+
+        {/* Outlined Year Characters */}
+        <span className="inline-block text-outline">
+          {outlinedChars.map((char, index) => (
+            <span
+              key={index}
+              className="inline-block opacity-0 animate-fade-in"
+              style={{
+                animationDelay: `${(solidChars.length + index) * 40}ms`,
+                animationFillMode: 'forwards',
+              }}
+            >
+              {char}
+            </span>
+          ))}
         </span>
       </h1>
 
-      {/* 3. Terminal Style Dynamic Subtitle */}
-      <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-[#0e0f17]/80 backdrop-blur-md font-mono text-sm sm:text-lg md:text-xl font-bold text-primary shadow-lg">
-        <Terminal className="w-4 h-4 text-primary shrink-0" />
-        <span>&gt; {displayedText}</span>
-        <span className="w-2.5 h-5 ml-0.5 bg-primary animate-pulse" />
+      {/* 3. Dimension-Line Technical Decoration */}
+      <div className="mt-6 mb-4 font-mono text-xs sm:text-sm text-offwhite/40 tracking-widest select-none">
+        ←—— 24 HRS ——→
       </div>
 
-      {/* 4. Tagline */}
-      <p className="mt-5 max-w-2xl text-sm sm:text-base md:text-lg text-neutral-300 font-sans leading-relaxed">
-        {tagline}
+      {/* 4. Casual Student Voice Subhead */}
+      <p className="max-w-2xl font-mono text-sm sm:text-base text-offwhite/80 leading-relaxed">
+        24 hours. Build an agent that actually does something. Free food, loud music, one trophy.
       </p>
 
-      {/* 5. Synchronized 3D Flip Countdown Clock */}
-      <div className="my-8 sm:my-10 w-full max-w-3xl flex justify-center">
-        <FlipCountdown
-          initialTimer={timer}
-          eventId={eventId}
-          size="md"
-          showProgress={true}
-        />
-      </div>
+      {/* 5. Registered Counter (Only shown if count >= 10 per blueprint spec) */}
+      {regCount >= 10 && (
+        <div className="mt-4 font-mono text-xs text-yellow tracking-wider">
+          [ {regCount} TEAMS REGISTERED AND CONFIRMED ]
+        </div>
+      )}
 
-      {/* 6. Call to Action Buttons */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md font-mono text-xs font-bold">
+      {/* 6. CTAs */}
+      <div className="mt-8 flex flex-wrap items-center gap-6 font-mono text-xs sm:text-sm">
         {registrationOpen ? (
           <Link
             href="/register"
-            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary hover:opacity-95 text-black shadow-[0_0_25px_rgba(0,255,157,0.35)] hover:shadow-[0_0_35px_rgba(0,255,157,0.55)] hover:scale-105 transition-all flex items-center justify-center gap-2 group"
+            className="px-7 py-3.5 bg-yellow text-navy font-bold uppercase tracking-wider border border-yellow shadow-hard hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_#FFD23F] transition-all"
           >
-            <span>Register Team Now</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            Register your team →
           </Link>
         ) : (
-          <button
-            disabled
-            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/10 text-neutral-500 cursor-not-allowed"
-          >
+          <span className="px-7 py-3.5 bg-line text-offwhite/40 font-bold uppercase cursor-not-allowed">
             Registrations Closed
-          </button>
+          </span>
         )}
 
         <a
           href="#schedule"
-          className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-white/25 text-white backdrop-blur-md transition-all flex items-center justify-center gap-2"
+          className="text-offwhite hover:text-yellow underline underline-offset-4 tracking-wider transition-colors"
         >
-          <Calendar className="w-4 h-4 text-neutral-400" />
-          <span>Explore Schedule</span>
+          See the schedule
         </a>
+      </div>
+
+      {/* 7. Minimalist Plain Mono Countdown Row */}
+      <div className="mt-16 pt-8 border-t border-line font-mono flex items-center flex-wrap gap-4 text-offwhite">
+        {timeLeft.status === 'live' ? (
+          <div className="text-xl sm:text-2xl font-bold text-yellow tracking-widest">
+            HACKING IS LIVE
+          </div>
+        ) : timeLeft.status === 'ended' ? (
+          <div className="text-xl sm:text-2xl font-bold text-offwhite/50 tracking-widest">
+            HACKX {year} HAS ENDED
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 sm:gap-6 text-xl sm:text-3xl font-bold tracking-wider">
+            <div className="flex items-baseline gap-1">
+              <span>{timeLeft.days}</span>
+              <span className="text-[11px] sm:text-xs text-offwhite/50 font-normal">d</span>
+            </div>
+            <span className="text-line">|</span>
+
+            <div className="flex items-baseline gap-1">
+              <span>{timeLeft.hours}</span>
+              <span className="text-[11px] sm:text-xs text-offwhite/50 font-normal">h</span>
+            </div>
+            <span className="text-line">|</span>
+
+            <div className="flex items-baseline gap-1">
+              <span>{timeLeft.minutes}</span>
+              <span className="text-[11px] sm:text-xs text-offwhite/50 font-normal">m</span>
+            </div>
+            <span className="text-line">|</span>
+
+            <div className="flex items-baseline gap-1 text-yellow">
+              <span>{timeLeft.seconds}</span>
+              <span className="text-[11px] sm:text-xs text-offwhite/50 font-normal">s</span>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

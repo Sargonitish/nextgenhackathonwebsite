@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,113 +6,128 @@
 
 :root {
   color-scheme: dark;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-  --font-display: 'Space Grotesk', var(--font-sans);
+  --navy: #0B1F3A;
+  --offwhite: #F2EFE6;
+  --yellow: #FFD23F;
+  --line: rgba(242, 239, 230, 0.2);
 
-  /* Cyberpunk 2.0 Base Palette */
-  --primary: #00ff9d;
-  --primary-glow: rgba(0, 255, 157, 0.45);
-  --accent: #8b5cf6;
-  --accent-glow: rgba(139, 92, 246, 0.45);
-  --cyan: #00f0ff;
-  
-  --background: #08080c;
-  --foreground: #f3f4f6;
+  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  /* Modern dynamic tokens using color-mix() */
-  --primary-subtle: color-mix(in srgb, var(--primary) 12%, transparent);
-  --primary-border: color-mix(in srgb, var(--primary) 30%, transparent);
-  --surface-glass: rgba(14, 15, 23, 0.75);
-  --surface-glass-card: rgba(18, 19, 30, 0.85);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glass-hover: rgba(0, 255, 157, 0.35);
+  /* Compatibility mapped to Blueprint palette */
+  --background: #0B1F3A;
+  --foreground: #F2EFE6;
+  --primary: #FFD23F;
+  --accent: #F2EFE6;
 }
 
 html {
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
+  background-color: #0B1F3A;
+  color: #F2EFE6;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--navy);
+  color: var(--offwhite);
   overflow-x: hidden;
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glassmorphism Utilities */
-.glass-card {
-  background: var(--surface-glass-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-glass);
+/* Hide native cursor on desktop when CustomCursor is active */
+body.custom-cursor-active,
+body.custom-cursor-active a,
+body.custom-cursor-active button,
+body.custom-cursor-active input,
+body.custom-cursor-active select,
+body.custom-cursor-active textarea {
+  cursor: none !important;
 }
 
-.glass-card-hover {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+/* Outlined typography for 2026 */
+.text-outline {
+  -webkit-text-stroke: 2px #F2EFE6;
+  color: transparent;
+  font-family: var(--font-display);
 }
 
-.glass-card-hover:hover {
-  border-color: var(--border-glass-hover);
-  background: rgba(22, 24, 38, 0.92);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.6), 0 0 24px -6px rgba(0, 255, 157, 0.15);
+@media (min-width: 1024px) {
+  .text-outline {
+    -webkit-text-stroke: 3px #F2EFE6;
+  }
 }
 
-/* Neon Glow & Text Utilities */
-.neon-glow-primary {
-  box-shadow: 0 0 25px -4px rgba(0, 255, 157, 0.35);
+/* Hard offset shadow utility */
+.shadow-hard {
+  box-shadow: 6px 6px 0 #FFD23F;
 }
 
-.neon-text-glow {
-  text-shadow: 0 0 20px rgba(0, 255, 157, 0.5), 0 0 40px rgba(0, 255, 157, 0.2);
+.shadow-hard-sm {
+  box-shadow: 4px 4px 0 rgba(242, 239, 230, 0.3);
 }
 
-.cyan-text-glow {
-  text-shadow: 0 0 20px rgba(0, 240, 255, 0.5), 0 0 40px rgba(0, 240, 255, 0.2);
+.shadow-hard-dark {
+  box-shadow: 4px 4px 0 #0B1F3A;
 }
 
-/* Subtle Specular Top Border Glow */
-.specular-border {
-  position: relative;
+/* Button active push interaction */
+.btn-blueprint {
+  transition: transform 150ms ease, box-shadow 150ms ease;
 }
 
-.specular-border::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 157, 0.6), transparent);
-  pointer-events: none;
+.btn-blueprint:hover {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 rgba(242, 239, 230, 0.3);
 }
 
-/* Dynamic Viewport Helper */
-.dvh-screen {
-  min-height: 100dvh;
+.btn-blueprint-yellow:hover {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 #FFD23F;
 }
 
-/* Custom Sleek Scrollbar */
+/* Accessible visible focus states */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #FFD23F !important;
+  outline-offset: 2px !important;
+}
+
+/* Technical hairlines */
+.border-line {
+  border-color: rgba(242, 239, 230, 0.2);
+}
+
+/* Scroll margin offset for sticky navbar */
+section[id] {
+  scroll-margin-top: 80px;
+}
+
+/* 5-Click Easter Egg: Palette Inversion */
+html.blueprint-inverted {
+  filter: invert(1) hue-rotate(180deg);
+  transition: filter 300ms ease;
+}
+
+/* Sleek technical scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #08080c;
+  background: #0B1F3A;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1f2233;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(242, 239, 230, 0.25);
+  border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
-  box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+  background: #FFD23F;
 }

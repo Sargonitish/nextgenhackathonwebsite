@@ -1,26 +1,49 @@
-import ReactMarkdown from 'react-markdown';
-import { ShieldCheck } from 'lucide-react';
+interface RulesProps {
+  rulesText?: string;
+}
 
-export default function Rules({ rulesText }: { rulesText: string }) {
-  if (!rulesText) return null;
+export default function Rules({ rulesText }: RulesProps) {
+  const defaultRules = [
+    'Teams of 2–4 members. Solo entries are not allowed.',
+    'All code must be written during the hackathon. Pre-built projects will be disqualified.',
+    'You may use open-source libraries and public APIs. Credit them in your README.',
+    'Each team submits one project. One repo, one demo video (under 3 minutes).',
+    'Submissions must be pushed to GitHub/GitLab before the deadline. Late pushes are ignored.',
+    'Judging criteria: originality (25%), technical depth (25%), working demo (25%), presentation (25%).',
+    'Be respectful. Harassment, plagiarism, or sabotage means instant disqualification.',
+    "Organisers' decisions on all disputes are final.",
+    'Participants must stay on the venue premises for the full 24 hours.',
+    'By registering, you agree to appear in event photos and videos shared on social media.',
+  ];
+
+  const rulesList = rulesText
+    ? rulesText
+        .split('\n')
+        .map((r) => r.replace(/^\d+[\.\)]\s*/, '').trim())
+        .filter((r) => r.length > 0)
+    : defaultRules;
 
   return (
-    <section id="rules" className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto z-10 relative">
-      <div className="rounded-3xl border border-white/10 bg-[#0e0f18]/85 backdrop-blur-2xl p-8 sm:p-12 shadow-2xl relative overflow-hidden group hover:border-primary/30 transition-all duration-300">
-        <div className="absolute top-0 left-0 w-80 h-80 bg-accent/10 rounded-full blur-[100px] pointer-events-none" />
+    <section id="rules" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
+      {/* Section Label */}
+      <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-10">
+        04 / RULES
+      </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary font-mono text-xs font-semibold uppercase tracking-widest mb-4">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>FAIR PLAY & STANDARDS</span>
-        </div>
+      <h2 className="sr-only">Hackathon Rules & Regulations</h2>
 
-        <h2 className="font-mono text-2xl sm:text-4xl font-black text-white mb-6 tracking-tight">
-          Rules & Code of Conduct
-        </h2>
-
-        <div className="prose prose-invert max-w-none text-neutral-300 font-sans text-xs sm:text-sm leading-relaxed space-y-3">
-          <ReactMarkdown>{rulesText}</ReactMarkdown>
-        </div>
+      {/* Compact Numbered List with generous left padding */}
+      <div className="max-w-3xl space-y-6 pl-0 sm:pl-6">
+        {rulesList.slice(0, 10).map((rule, idx) => (
+          <div key={idx} className="flex items-start gap-4 sm:gap-6 font-mono text-xs sm:text-sm">
+            <span className="text-yellow font-bold shrink-0 w-6">
+              {String(idx + 1).padStart(2, '0')}
+            </span>
+            <p className="text-offwhite/80 leading-relaxed">
+              {rule}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );

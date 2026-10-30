@@ -9,43 +9,39 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#08080c',
+        navy: '#0B1F3A',
+        offwhite: '#F2EFE6',
+        yellow: '#FFD23F',
+        line: 'rgba(242, 239, 230, 0.2)',
+        // Backwards compatibility with admin / dynamic overrides
+        background: '#0B1F3A',
         primary: {
-          DEFAULT: 'var(--primary, #00ff9d)',
-          glow: 'var(--primary-glow, rgba(0, 255, 157, 0.4))',
+          DEFAULT: '#FFD23F',
         },
         accent: {
-          DEFAULT: 'var(--accent, #7c3aed)',
-          glow: 'var(--accent-glow, rgba(124, 58, 237, 0.4))',
+          DEFAULT: '#F2EFE6',
         },
       },
       fontFamily: {
-        mono: ['var(--font-mono)', 'monospace'],
-        sans: ['var(--font-sans)', 'sans-serif'],
+        display: ['"Bricolage Grotesque"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
+        sans: ['"JetBrains Mono"', 'monospace'],
+      },
+      borderRadius: {
+        none: '0px',
+        sm: '1px',
+        DEFAULT: '0px',
+        md: '2px',
+        lg: '2px',
+        xl: '2px',
+        '2xl': '2px',
+        '3xl': '2px',
       },
       boxShadow: {
-        'glow-primary': '0 0 25px -5px rgba(0, 255, 157, 0.35)',
-        'glow-accent': '0 0 25px -5px rgba(124, 58, 237, 0.35)',
-        'glass-card': '0 8px 32px 0 rgba(0, 0, 0, 0.4)',
-      },
-      animation: {
-        'fade-in': 'fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'pulse-slow': 'pulseSlow 3s ease-in-out infinite',
-        'shimmer': 'shimmer 2.5s linear infinite',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(8px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        pulseSlow: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.6' },
-        },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
-        },
+        hard: '6px 6px 0 #FFD23F',
+        'hard-sm': '4px 4px 0 rgba(242, 239, 230, 0.3)',
+        'hard-dark': '4px 4px 0 #0B1F3A',
+        'hard-hover': '2px 2px 0 #FFD23F',
       },
     },
   },

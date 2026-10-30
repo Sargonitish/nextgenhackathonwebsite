@@ -8,19 +8,19 @@ export async function generateMetadata(): Promise<Metadata> {
     const event = await getActiveEvent();
     if (!event) {
       return {
-        title: 'College Hackathon Platform',
-        description: 'Premier collegiate hackathon platform',
+        title: 'HACKX 2026 — Build Autonomous Agents',
+        description: '24-hour collegiate hackathon to build autonomous agents.',
       };
     }
     return {
-      title: `${event.name} | ${event.content?.heroTagline || 'College Hackathon'}`,
-      description: event.content?.aboutText || event.content?.heroTagline,
+      title: `${event.name} 2026 — Build Autonomous Agents`,
+      description: event.content?.aboutText || '24-hour sprint to build agents that act on their own.',
       icons: event.branding?.faviconUrl ? [{ url: event.branding.faviconUrl }] : undefined,
     };
   } catch {
     return {
-      title: 'College Hackathon Platform',
-      description: 'Premier collegiate hackathon platform',
+      title: 'HACKX 2026 — Build Autonomous Agents',
+      description: '24-hour collegiate hackathon to build autonomous agents.',
     };
   }
 }
@@ -30,31 +30,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let primaryColor = '#00ff9d';
-  let accentColor = '#7c3aed';
-
-  try {
-    const event = await getActiveEvent();
-    if (event?.branding?.primaryColor) {
-      primaryColor = event.branding.primaryColor;
-    }
-    if (event?.branding?.accentColor) {
-      accentColor = event.branding.accentColor;
-    }
-  } catch {
-    // Database connection or initial boot fallback
-  }
-
   return (
     <html lang="en" className="dark">
       <head>
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `:root { --primary: ${primaryColor}; --accent: ${accentColor}; }`,
-          }}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+          rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[#0a0a0f] text-[#f0f0f5] antialiased selection:bg-primary/20 selection:text-primary">
+      <body className="min-h-screen bg-navy text-offwhite antialiased selection:bg-yellow selection:text-navy">
         {children}
         <Toaster position="top-right" richColors theme="dark" />
       </body>

@@ -1,102 +1,70 @@
-import {
-  Bot,
-  Shield,
-  Activity,
-  Cpu,
-  Globe,
-  Code,
-  Database,
-  Smartphone,
-  Layers,
-  Sparkles,
-  ArrowUpRight,
-} from 'lucide-react';
-
 interface TrackItem {
   _id?: string;
   title: string;
   description: string;
-  icon: string;
+  icon?: string;
 }
 
-const iconMap: Record<string, any> = {
-  Bot,
-  Shield,
-  Activity,
-  Cpu,
-  Globe,
-  Code,
-  Database,
-  Smartphone,
-};
-
-// Default tags for tracks to create modern dev category badges
-const trackTags: Record<string, string[]> = {
-  AI: ['LLMs', 'Agents', 'Neural Nets'],
-  Cybersecurity: ['Zero Trust', 'Auth', 'PenTest'],
-  Fintech: ['DeFi', 'Payments', 'Crypto'],
-  Healthcare: ['Biotech', 'Wearables', 'Vision'],
-  Web3: ['Smart Contracts', 'Solidity', 'dApps'],
-  Cloud: ['Serverless', 'DevOps', 'Microservices'],
-};
-
 export default function Tracks({ tracks = [] }: { tracks: TrackItem[] }) {
-  if (tracks.length === 0) return null;
+  // Fallback default tracks if database has empty list
+  const displayTracks: TrackItem[] =
+    tracks.length > 0
+      ? tracks
+      : [
+          {
+            title: 'Autonomous Software Engineers',
+            description: 'Agents that plan, write code, run unit tests, and resolve bugs end-to-end.',
+          },
+          {
+            title: 'Decentralized Intelligence & Web3',
+            description: 'Autonomous financial agents, smart contract auditing swarms, and on-chain solvers.',
+          },
+          {
+            title: 'Local & Edge Machine Learning',
+            description: 'Quantized neural networks, tiny models, and privacy-first local agents on consumer chips.',
+          },
+          {
+            title: 'Physical & Cyber Hardware Systems',
+            description: 'Autonomous robotics, embedded agents, sensor telemetry, and automation controllers.',
+          },
+        ];
 
   return (
-    <section id="tracks" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10 relative">
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary font-mono text-xs font-semibold uppercase tracking-widest mb-4 backdrop-blur-md shadow-[0_0_15px_rgba(0,255,157,0.15)]">
-          <Layers className="w-3.5 h-3.5" />
-          <span>INNOVATION TRACKS</span>
-        </div>
-        <h2 className="font-mono text-3xl sm:text-5xl font-black text-white tracking-tight">
-          Choose Your Battleground
-        </h2>
-        <p className="text-neutral-400 font-sans text-sm sm:text-base mt-3 leading-relaxed">
-          Select one of our dedicated development tracks to engineer cutting-edge solutions and compete for specialized category rewards.
-        </p>
+    <section id="tracks" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
+      {/* Section Label */}
+      <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-8">
+        01 / TRACKS
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tracks.map((track, idx) => {
-          const Icon = iconMap[track.icon] || Code;
+      <h2 className="sr-only">Innovation Tracks</h2>
+
+      {/* Numbered Rows List (NOT Cards) */}
+      <div className="border-b border-line">
+        {displayTracks.map((track, idx) => {
+          const trackNum = String(idx + 1).padStart(2, '0');
           return (
             <div
               key={track._id || idx}
-              className="p-7 rounded-3xl border border-white/10 bg-[#0e0f18]/80 hover:bg-[#131522]/90 hover:border-primary/50 transition-all duration-300 group backdrop-blur-xl shadow-xl flex flex-col justify-between hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(0,255,157,0.15)]"
+              className="group border-t border-line py-8 sm:py-10 px-2 sm:px-6 transition-all duration-200 hover:bg-white/[0.03] flex items-center justify-between gap-6 cursor-default"
             >
-              <div>
-                {/* Header with Icon & Track Number */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary group-hover:scale-110 group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(0,255,157,0.4)] transition-all">
-                    <Icon className="w-7 h-7" />
-                  </div>
-                  <span className="font-mono text-xs text-neutral-500 font-bold tracking-widest uppercase">
-                    TRACK 0{idx + 1}
-                  </span>
-                </div>
+              {/* Left: Track Number */}
+              <div className="font-display font-black text-3xl sm:text-5xl text-offwhite/40 group-hover:text-yellow transition-colors shrink-0">
+                {trackNum}
+              </div>
 
-                {/* Track Title */}
-                <h3 className="font-mono text-xl font-bold text-white mb-2.5 group-hover:text-primary transition-colors flex items-center justify-between">
-                  <span>{track.title}</span>
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-primary" />
+              {/* Middle: Title & Description */}
+              <div className="flex-1 pr-4">
+                <h3 className="font-display font-bold text-xl sm:text-3xl text-offwhite group-hover:text-yellow transition-colors">
+                  {track.title}
                 </h3>
-
-                {/* Track Description */}
-                <p className="text-neutral-400 text-xs sm:text-sm font-sans leading-relaxed mb-6">
+                <p className="mt-1.5 font-mono text-xs sm:text-sm text-offwhite/60 leading-relaxed max-w-3xl">
                   {track.description}
                 </p>
               </div>
 
-              {/* Bottom Track Meta / Tech Badges */}
-              <div className="pt-4 border-t border-white/5 flex flex-wrap gap-1.5 font-mono text-[10px]">
-                <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-neutral-300">
-                  Open Source
-                </span>
-                <span className="px-2.5 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary">
-                  Prizes Eligible
-                </span>
+              {/* Right: Sliding Arrow */}
+              <div className="font-mono text-2xl text-offwhite/40 group-hover:text-yellow group-hover:translate-x-2 transition-all shrink-0">
+                →
               </div>
             </div>
           );

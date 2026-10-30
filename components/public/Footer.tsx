@@ -1,138 +1,104 @@
+'use client';
+
+import { useRef } from 'react';
 import Link from 'next/link';
-import {
-  Mail,
-  Phone,
-  Globe,
-  Instagram,
-  Linkedin,
-  Twitter,
-  MessageSquare,
-  Shield,
-  Sparkles,
-} from 'lucide-react';
 
 interface FooterProps {
-  eventName: string;
+  eventName?: string;
   contactEmail?: string;
-  contactPhone?: string;
+  madeBy?: string;
   socials?: {
     instagram?: string;
-    linkedin?: string;
+    discord?: string;
     twitter?: string;
-    website?: string;
     whatsapp?: string;
   };
-  organizerSignupOpen?: boolean;
 }
 
 export default function Footer({
-  eventName,
-  contactEmail,
-  contactPhone,
+  eventName = 'HACKX',
+  contactEmail = 'contact@hackx.dev',
+  madeBy = 'Made by students for builders worldwide',
   socials = {},
-  organizerSignupOpen = true,
 }: FooterProps) {
-  const currentYear = new Date().getFullYear();
+  // Easter egg: 5 clicks on HACKX inverts page palette for 3 seconds
+  const clickCountRef = useRef(0);
+  const revertTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleWordmarkClick = () => {
+    clickCountRef.current += 1;
+
+    if (clickCountRef.current >= 5) {
+      clickCountRef.current = 0;
+      document.documentElement.classList.add('blueprint-inverted');
+
+      if (revertTimeoutRef.current) clearTimeout(revertTimeoutRef.current);
+      revertTimeoutRef.current = setTimeout(() => {
+        document.documentElement.classList.remove('blueprint-inverted');
+      }, 3000);
+    }
+  };
 
   return (
-    <footer className="border-t border-white/10 bg-[#060609] py-14 px-4 sm:px-6 lg:px-8 font-mono text-xs z-10 relative">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-        {/* Brand & Copyright */}
-        <div className="text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2.5 mb-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_10px_rgba(0,255,157,0.8)]" />
-            <span className="font-bold text-sm text-white uppercase tracking-wider">
-              {eventName || 'HackX'}
-            </span>
-            <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-neutral-400">
-              v2.0
-            </span>
+    <footer className="border-t border-line bg-navy pt-16 overflow-hidden relative z-10 font-mono">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
+        {/* Top Info Strip: MadeBy, Email, Socials */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-16 text-xs text-offwhite/70">
+          {/* Made by students */}
+          <div className="space-y-1">
+            <p className="text-offwhite/50">{madeBy}</p>
+            <p className="text-offwhite/30 text-[11px]">All rights reserved © 2026</p>
           </div>
-          <p className="text-neutral-500 font-sans text-xs">
-            © {currentYear} {eventName}. Engineered for builders and disruptors worldwide.
-          </p>
-        </div>
 
-        {/* Contact info & Socials */}
-        <div className="flex flex-wrap items-center justify-center gap-4 text-neutral-400">
-          {contactEmail && (
+          {/* Contact Email & Socials as Plain Text Links with → */}
+          <div className="flex flex-wrap items-center gap-6 sm:gap-8">
             <a
               href={`mailto:${contactEmail}`}
-              className="flex items-center gap-1.5 hover:text-primary transition-colors py-1 px-2 rounded-lg hover:bg-white/5"
+              className="hover:text-yellow transition-colors inline-flex items-center gap-1.5"
             >
-              <Mail className="w-3.5 h-3.5 text-primary" />
               <span>{contactEmail}</span>
+              <span>→</span>
             </a>
-          )}
-          {contactPhone && (
-            <a
-              href={`tel:${contactPhone}`}
-              className="flex items-center gap-1.5 hover:text-primary transition-colors py-1 px-2 rounded-lg hover:bg-white/5"
-            >
-              <Phone className="w-3.5 h-3.5 text-primary" />
-              <span>{contactPhone}</span>
-            </a>
-          )}
 
-          <div className="flex items-center gap-3 pl-3 border-l border-white/10">
-            {socials.instagram && (
-              <a
-                href={socials.instagram}
-                target="_blank"
-                rel="noreferrer"
-                className="p-1.5 rounded-lg hover:text-primary hover:bg-white/5 transition-all"
-              >
-                <Instagram className="w-4 h-4" />
-              </a>
-            )}
-            {socials.linkedin && (
-              <a
-                href={socials.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="p-1.5 rounded-lg hover:text-primary hover:bg-white/5 transition-all"
-              >
-                <Linkedin className="w-4 h-4" />
-              </a>
-            )}
-            {socials.twitter && (
-              <a
-                href={socials.twitter}
-                target="_blank"
-                rel="noreferrer"
-                className="p-1.5 rounded-lg hover:text-primary hover:bg-white/5 transition-all"
-              >
-                <Twitter className="w-4 h-4" />
-              </a>
-            )}
-            {socials.whatsapp && (
-              <a
-                href={socials.whatsapp}
-                target="_blank"
-                rel="noreferrer"
-                className="p-1.5 rounded-lg hover:text-primary hover:bg-white/5 transition-all"
-              >
-                <MessageSquare className="w-4 h-4" />
-              </a>
-            )}
+            <a
+              href={socials.instagram || 'https://instagram.com'}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-yellow transition-colors inline-flex items-center gap-1.5"
+            >
+              <span>Instagram</span>
+              <span>→</span>
+            </a>
+
+            <a
+              href={socials.discord || socials.whatsapp || 'https://discord.com'}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-yellow transition-colors inline-flex items-center gap-1.5"
+            >
+              <span>Discord</span>
+              <span>→</span>
+            </a>
+
+            <Link
+              href="/admin/login"
+              className="hover:text-yellow transition-colors inline-flex items-center gap-1 text-offwhite/40"
+            >
+              <span>Admin</span>
+              <span>→</span>
+            </Link>
           </div>
         </div>
 
-        {/* Organizer Signup Link */}
-        <div className="text-center md:text-right">
-          {organizerSignupOpen ? (
-            <Link
-              href="/organizer/signup"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-white/10 bg-white/5 text-neutral-300 hover:text-white hover:border-primary/40 hover:bg-white/10 transition-all text-[11px]"
-            >
-              <Shield className="w-3.5 h-3.5 text-primary" />
-              <span>Organizer? Request Access →</span>
-            </Link>
-          ) : (
-            <Link href="/admin/login" className="text-neutral-500 hover:text-neutral-300 text-[11px]">
-              Admin Portal
-            </Link>
-          )}
+        {/* Huge Cropped HACKX Wordmark (Only Top 60-70% Visible) */}
+        <div
+          onClick={handleWordmarkClick}
+          className="select-none cursor-pointer overflow-hidden -mb-4 sm:-mb-8 lg:-mb-12"
+          title="Click 5 times for easter egg"
+        >
+          <div className="font-display font-black text-[22vw] leading-[0.72] tracking-tighter text-offwhite/10 hover:text-offwhite/20 transition-colors uppercase whitespace-nowrap">
+            {eventName}
+          </div>
         </div>
       </div>
     </footer>

@@ -1,7 +1,7 @@
 import { getActiveEvent } from '@/lib/activeEvent';
 import Link from 'next/link';
-import MatrixBackground from '@/components/public/MatrixBackground';
-import AnnouncementTicker from '@/components/public/AnnouncementTicker';
+import BlueprintBackground from '@/components/public/BlueprintBackground';
+import CustomCursor from '@/components/public/CustomCursor';
 import Navbar from '@/components/public/Navbar';
 import Hero from '@/components/public/Hero';
 import About from '@/components/public/About';
@@ -11,7 +11,6 @@ import Prizes from '@/components/public/Prizes';
 import Rules from '@/components/public/Rules';
 import Coordinators from '@/components/public/Coordinators';
 import Sponsors from '@/components/public/Sponsors';
-import Gallery from '@/components/public/Gallery';
 import Faq from '@/components/public/Faq';
 import Venue from '@/components/public/Venue';
 import Footer from '@/components/public/Footer';
@@ -26,30 +25,30 @@ export default async function HomePage() {
     console.error('Error fetching active event:', err);
   }
 
-  // Friendly Coming Soon page when no active event exists
+  // Blueprint Coming Soon page when no active event exists
   if (!event) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-6 text-center bg-[#0a0a0f] text-white">
-        <div className="max-w-md rounded-3xl border border-white/10 bg-[#12121c]/90 p-8 backdrop-blur-xl shadow-2xl">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/30 text-primary font-mono text-2xl shadow-lg shadow-primary/20">
-            ⚡
+      <main className="flex min-h-screen flex-col items-center justify-center p-6 text-left bg-navy text-offwhite font-mono">
+        <div className="max-w-md border border-line p-8 bg-navy shadow-hard">
+          <div className="font-mono text-xs text-yellow uppercase tracking-widest mb-3">
+            [ SYSTEM STATUS / STANDBY ]
           </div>
-          <h1 className="mb-2 font-mono text-2xl font-bold tracking-tight text-white">
-            Hackathon Coming Soon
+          <h1 className="font-display text-2xl font-black tracking-tight text-offwhite mb-3">
+            HACKX 2026 COMING SOON
           </h1>
-          <p className="mb-6 text-xs font-mono text-neutral-400 leading-relaxed">
-            No active hackathon edition is currently live. Admins can initialize the event or log in to the management console below.
+          <p className="mb-6 text-xs text-offwhite/70 leading-relaxed">
+            No active hackathon edition is currently published in the database. Initialize event configuration or access the management console below.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center font-mono text-xs">
+          <div className="flex flex-col sm:flex-row gap-3 text-xs">
             <Link
               href="/admin/setup"
-              className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 font-bold text-black shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
+              className="px-5 py-2.5 bg-yellow text-navy font-bold uppercase tracking-wider text-center border border-yellow shadow-[3px_3px_0_rgba(242,239,230,0.3)]"
             >
               Admin Setup
             </Link>
             <Link
               href="/admin/login"
-              className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-2.5 font-semibold text-white hover:bg-white/10 transition-all"
+              className="px-5 py-2.5 border border-line text-offwhite text-center hover:text-yellow transition-colors"
             >
               Admin Login
             </Link>
@@ -63,11 +62,14 @@ export default async function HomePage() {
   const sections = plainEvent.branding?.sections || {};
 
   return (
-    <div className="min-h-dvh bg-[#08080c] text-white relative flex flex-col selection:bg-primary/20 selection:text-primary">
-      {/* Animated Matrix Rain / Cyber Background */}
-      <MatrixBackground />
+    <div className="min-h-dvh bg-navy text-offwhite relative flex flex-col selection:bg-yellow selection:text-navy">
+      {/* 1. Custom Desktop Crosshair Cursor */}
+      <CustomCursor />
 
-      {/* 1. Sticky Navigation Bar */}
+      {/* 2. Blueprint 48px Graph-Paper Grid & Autonomous Agents Canvas */}
+      <BlueprintBackground />
+
+      {/* 3. Flat Sticky Blueprint Navbar */}
       <Navbar
         eventName={plainEvent.name}
         logoUrl={plainEvent.branding?.logoUrl}
@@ -75,44 +77,42 @@ export default async function HomePage() {
         registrationOpen={plainEvent.settings?.registrationOpen ?? true}
       />
 
-      {/* 2. Live Broadcast Marquee Ticker */}
-      <AnnouncementTicker />
-
-      {/* Main Sections */}
+      {/* Main Blueprint Sections (Asymmetric & Left-Aligned) */}
       <main className="flex-1 flex flex-col">
-        {/* 3. Hero Section with Flip Countdown */}
+        {/* 4. Asymmetric Hero with Outlined 2026 & Mono Row Countdown */}
         {sections.hero !== false && (
           <Hero
-            title={plainEvent.content?.heroTitle || plainEvent.name}
-            tagline={plainEvent.content?.heroTagline || ''}
-            typingWords={plainEvent.content?.typingWords || ['Build', 'Innovate', 'Disrupt', 'Ship']}
+            title={plainEvent.name || 'HACKX'}
+            collegeName={plainEvent.content?.collegeName || 'COLLEGE OF ENGINEERING'}
+            year={plainEvent.year || 2026}
             timer={plainEvent.timer}
             registrationOpen={plainEvent.settings?.registrationOpen ?? true}
             eventId={plainEvent._id.toString()}
           />
         )}
 
-        {/* 4. About Section */}
+        {/* 5. Manifesto About Section (60/40 Asymmetric Split & Stats Strip) */}
         {sections.about !== false && (
           <About
-            title={plainEvent.content?.aboutTitle || `About ${plainEvent.name}`}
-            text={plainEvent.content?.aboutText || ''}
+            title={plainEvent.content?.aboutTitle}
+            text={plainEvent.content?.aboutText}
+            prizePool={plainEvent.content?.prizePool || '₹1,00,000'}
           />
         )}
 
-        {/* 5. Tracks Grid */}
+        {/* 6. Numbered Hairline Rows (01–04) Tracks List */}
         {sections.tracks !== false && <Tracks tracks={plainEvent.tracks || []} />}
 
-        {/* 6. Schedule Timeline */}
+        {/* 7. Vertical Timeline Schedule with Real-time Active Milestone */}
         {sections.schedule !== false && <Schedule schedule={plainEvent.schedule || []} />}
 
-        {/* 7. Prizes & Awards */}
+        {/* 8. Asymmetric Staggered Prizes with Oversized Numerals (1, 2, 3) */}
         {sections.prizes !== false && <Prizes prizes={plainEvent.prizes || []} />}
 
-        {/* 8. Rules & Code of Conduct */}
+        {/* 9. Rules List (Compact 1–10) */}
         {sections.rules !== false && <Rules rulesText={plainEvent.content?.rulesText || ''} />}
 
-        {/* 9. Coordinators & Organizing Team */}
+        {/* 10. Team Photo Grid (Square placeholders, grayscale -> color hover) */}
         {sections.coordinators !== false && (
           <Coordinators
             coordinators={plainEvent.coordinators || []}
@@ -120,33 +120,34 @@ export default async function HomePage() {
           />
         )}
 
-        {/* 10. Sponsors & Partners */}
-        {sections.sponsors !== false && <Sponsors sponsors={plainEvent.sponsors || []} />}
+        {/* 11. Sponsors Grid with Hairlines */}
+        {sections.sponsors !== false && (
+          <Sponsors
+            sponsors={plainEvent.sponsors || []}
+            contactEmail={plainEvent.content?.contactEmail}
+          />
+        )}
 
-        {/* 11. Gallery Grid & Lightbox */}
-        {sections.gallery !== false && <Gallery gallery={plainEvent.gallery || []} />}
-
-        {/* 12. FAQs Accordion */}
+        {/* 12. FAQs Accordion with + / − Toggles */}
         {sections.faq !== false && <Faq faqs={plainEvent.faqs || []} />}
 
-        {/* 13. Venue & Map */}
+        {/* 13. Venue with Technical Crosshair Coordinates Pin */}
         {sections.venue !== false && (
           <Venue
-            name={plainEvent.content?.venueName || ''}
-            address={plainEvent.content?.venueAddress || ''}
-            mapEmbedUrl={plainEvent.content?.mapEmbedUrl || ''}
+            name={plainEvent.content?.venueName}
+            address={plainEvent.content?.venueAddress}
+            mapEmbedUrl={plainEvent.content?.mapEmbedUrl}
           />
         )}
       </main>
 
-      {/* 14. Footer with Socials & Organizer Sign-up Link */}
+      {/* 14. Footer with Oversized Cropped Wordmark & 5-Click Easter Egg */}
       {sections.contact !== false && (
         <Footer
           eventName={plainEvent.name}
           contactEmail={plainEvent.content?.contactEmail}
-          contactPhone={plainEvent.content?.contactPhone}
           socials={plainEvent.content?.socials}
-          organizerSignupOpen={plainEvent.settings?.organizerSignupOpen ?? true}
+          madeBy={plainEvent.content?.madeBy || 'Made by students for builders worldwide'}
         />
       )}
     </div>

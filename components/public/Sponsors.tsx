@@ -1,65 +1,77 @@
 import Image from 'next/image';
-import { BadgeDollarSign } from 'lucide-react';
 
 interface SponsorItem {
   _id?: string;
   name: string;
-  logoUrl: string;
-  website?: string;
-  tier: string;
+  logoUrl?: string;
+  tier?: string;
+  websiteUrl?: string;
 }
 
-export default function Sponsors({ sponsors = [] }: { sponsors: SponsorItem[] }) {
-  if (sponsors.length === 0) return null;
+export default function Sponsors({
+  sponsors = [],
+  contactEmail = 'sponsors@hackx.dev',
+}: {
+  sponsors: SponsorItem[];
+  contactEmail?: string;
+}) {
+  const placeholders = ['LOGO A', 'LOGO B', 'LOGO C', 'LOGO D'];
 
   return (
-    <section id="sponsors" className="py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto z-10 relative">
-      <div className="text-center max-w-2xl mx-auto mb-16">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary font-mono text-xs uppercase tracking-widest mb-3">
-          <BadgeDollarSign className="w-3.5 h-3.5" />
-          <span>Ecosystem Backers</span>
-        </div>
-        <h2 className="font-mono text-3xl sm:text-4xl font-extrabold text-white">
-          Sponsors & Partners
-        </h2>
-        <p className="text-neutral-400 font-mono text-xs sm:text-sm mt-2">
-          Backed by leading global technology infrastructure providers and developer communities.
-        </p>
+    <section id="sponsors" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
+      {/* Section Label */}
+      <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-10">
+        06 / SPONSORS
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-        {sponsors.map((s, idx) => {
-          const Content = (
-            <div className="p-6 rounded-2xl border border-white/10 bg-[#12121c]/70 hover:border-primary/40 hover:bg-[#161624] transition-all flex flex-col items-center justify-center text-center group h-36">
-              <div className="relative w-36 h-14 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all">
-                <Image
-                  src={s.logoUrl}
-                  alt={s.name}
-                  fill
-                  className="object-contain"
-                  unoptimized
-                />
-              </div>
-              <span className="text-[10px] font-mono text-neutral-500 mt-2 block group-hover:text-primary transition-colors">
-                {s.tier || s.name}
-              </span>
-            </div>
-          );
+      <h2 className="sr-only">Partners & Sponsors</h2>
 
-          return s.website ? (
-            <a
-              key={s._id || idx}
-              href={s.website}
-              target="_blank"
-              rel="noreferrer"
-              className="block"
-            >
-              {Content}
-            </a>
-          ) : (
-            <div key={s._id || idx}>{Content}</div>
-          );
-        })}
+      {/* Grid of Logo Slots Separated by Hairlines */}
+      <div className="grid grid-cols-2 md:grid-cols-4 border-t border-l border-line">
+        {sponsors.length > 0
+          ? sponsors.map((sponsor, idx) => (
+              <div
+                key={sponsor._id || idx}
+                className="border-r border-b border-line p-8 h-32 flex items-center justify-center bg-white/[0.01] hover:bg-white/[0.03] transition-colors"
+              >
+                {sponsor.logoUrl ? (
+                  <div className="relative h-12 w-full">
+                    <Image
+                      src={sponsor.logoUrl}
+                      alt={sponsor.name}
+                      fill
+                      className="object-contain filter grayscale hover:grayscale-0 transition-all"
+                      unoptimized
+                    />
+                  </div>
+                ) : (
+                  <span className="font-mono text-sm font-bold text-offwhite/50 tracking-wider">
+                    {sponsor.name}
+                  </span>
+                )}
+              </div>
+            ))
+          : placeholders.map((p, idx) => (
+              <div
+                key={idx}
+                className="border-r border-b border-line p-8 h-32 flex items-center justify-center border-dashed bg-white/[0.01]"
+              >
+                <span className="font-mono text-xs text-offwhite/30 tracking-widest uppercase">
+                  {p}
+                </span>
+              </div>
+            ))}
+      </div>
+
+      {/* Become a Sponsor Mailto Link */}
+      <div className="mt-8 font-mono text-xs sm:text-sm">
+        <a
+          href={`mailto:${contactEmail}?subject=HackX%20Sponsorship%20Inquiry`}
+          className="text-yellow hover:underline underline-offset-4 tracking-wider transition-colors inline-flex items-center gap-1.5"
+        >
+          <span>Become a sponsor</span>
+          <span>→</span>
+        </a>
       </div>
     </section>
   );
