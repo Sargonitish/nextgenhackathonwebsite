@@ -14,6 +14,7 @@ import {
   Loader2,
   Upload,
 } from 'lucide-react';
+import { compressImage } from '@/lib/compressImage';
 
 interface OrganizerProfile {
   id: string;
@@ -78,8 +79,9 @@ export default function OrganizerProfilePage() {
     try {
       setUploading(true);
       setErrorMsg(null);
+      const optimized = await compressImage(file, 400, 400);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', optimized);
 
       const res = await fetch('/api/organizer/upload', {
         method: 'POST',

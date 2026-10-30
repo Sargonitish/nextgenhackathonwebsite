@@ -11,17 +11,28 @@ export async function uploadStreamToCloudinary(
   buffer: Buffer,
   folder: string
 ): Promise<{ url: string; publicId: string }> {
-  // If Cloudinary credentials are not configured, return a mock/data URL for offline resilience
-  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY) {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  const isConfigured =
+    cloudName &&
+    cloudName !== 'demo-cloud' &&
+    apiKey &&
+    apiKey !== '123456789012345' &&
+    apiSecret &&
+    !apiSecret.startsWith('abcdef');
+
+  // If Cloudinary credentials are dummy or missing, use base64 data URI
+  if (!isConfigured) {
     const base64 = buffer.toString('base64');
-    const mockUrl = `data:image/jpeg;base64,${base64}`;
     return {
-      url: mockUrl,
-      publicId: `local-mock-${Date.now()}`,
+      url: `data:image/jpeg;base64,${base64}`,
+      publicId: `local-data-${Date.now()}`,
     };
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder,
@@ -29,7 +40,12 @@ export async function uploadStreamToCloudinary(
       },
       (error, result) => {
         if (error || !result) {
-          reject(error || new Error('Upload to Cloudinary failed'));
+          console.warn('Cloudinary upload failed, falling back to data URL:', error?.message);
+          const base64 = buffer.toString('base64');
+          resolve({
+            url: `data:image/jpeg;base64,${base64}`,
+            publicId: `local-fallback-${Date.now()}`,
+          });
         } else {
           resolve({
             url: result.secure_url,

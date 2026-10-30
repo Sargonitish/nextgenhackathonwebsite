@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Upload, X, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { compressImage } from '@/lib/compressImage';
 
 interface ImageUploadProps {
   value?: string | null;
@@ -41,12 +42,13 @@ export default function ImageUpload({
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('eventSlug', eventSlug);
-
     setUploading(true);
     try {
+      const optimizedFile = await compressImage(file);
+      const formData = new FormData();
+      formData.append('file', optimizedFile);
+      formData.append('eventSlug', eventSlug);
+
       const res = await fetch(endpoint, {
         method: 'POST',
         body: formData,
