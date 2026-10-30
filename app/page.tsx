@@ -63,7 +63,7 @@ export default async function HomePage() {
   const sections = plainEvent.branding?.sections || {};
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white relative flex flex-col selection:bg-primary/20 selection:text-primary">
+    <div className="min-h-dvh bg-[#08080c] text-white relative flex flex-col selection:bg-primary/20 selection:text-primary">
       {/* Animated Matrix Rain / Cyber Background */}
       <MatrixBackground />
 

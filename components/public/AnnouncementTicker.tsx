@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Megaphone } from 'lucide-react';
+import { Megaphone, Zap } from 'lucide-react';
 
 interface Announcement {
   _id: string;
@@ -32,18 +32,18 @@ export default function AnnouncementTicker() {
   if (announcements.length === 0) return null;
 
   return (
-    <div className="relative z-30 w-full border-b border-primary/20 bg-black/60 backdrop-blur-md">
+    <div className="relative z-30 w-full border-b border-primary/20 bg-[#08080c]/90 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-3 overflow-hidden">
-        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-mono text-xs font-semibold uppercase tracking-wider flex-shrink-0">
-          <Megaphone className="w-3.5 h-3.5" />
-          <span>Live Alert</span>
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary font-mono text-[11px] font-bold uppercase tracking-wider flex-shrink-0 shadow-[0_0_10px_rgba(0,255,157,0.2)]">
+          <Zap className="w-3.5 h-3.5 animate-pulse text-primary" />
+          <span>LIVE BROADCAST</span>
         </div>
 
         <div className="overflow-hidden whitespace-nowrap flex-1">
           <div className="inline-block animate-marquee font-mono text-xs text-neutral-300">
             {announcements.map((a) => (
               <span key={a._id} className="mx-6">
-                ⚡ {a.message}
+                ⚡ <span className="text-white font-semibold">{a.message}</span>
               </span>
             ))}
           </div>

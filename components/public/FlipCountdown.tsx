@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { computeTimerView, TimerState, TimerView } from '@/lib/timer';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,10 +15,10 @@ function DigitCard({ value, label, size = 'md' }: { value: number; label: string
   const formatted = String(value).padStart(2, '0');
 
   const cardSizes = {
-    sm: 'w-10 h-12 text-lg sm:w-12 sm:h-14 sm:text-xl',
-    md: 'w-14 h-16 text-2xl sm:w-20 sm:h-24 sm:text-4xl',
-    lg: 'w-16 h-20 text-3xl sm:w-24 sm:h-28 sm:text-5xl md:w-28 md:h-32 md:text-6xl',
-    xl: 'w-20 h-24 text-4xl sm:w-32 sm:h-40 sm:text-7xl md:w-40 md:h-48 md:text-8xl',
+    sm: 'w-11 h-14 text-xl sm:w-14 sm:h-16 sm:text-2xl',
+    md: 'w-16 h-20 text-3xl sm:w-24 sm:h-28 sm:text-5xl',
+    lg: 'w-20 h-24 text-4xl sm:w-28 sm:h-34 sm:text-6xl md:w-32 md:h-38 md:text-7xl',
+    xl: 'w-24 h-28 text-5xl sm:w-36 sm:h-44 sm:text-8xl md:w-44 md:h-52 md:text-9xl',
   };
 
   const labelSizes = {
@@ -31,20 +31,27 @@ function DigitCard({ value, label, size = 'md' }: { value: number; label: string
   return (
     <div className="flex flex-col items-center">
       <div
-        className={`relative rounded-xl border border-white/15 bg-gradient-to-b from-[#181824] to-[#0c0c14] font-mono font-extrabold text-white shadow-2xl flex items-center justify-center overflow-hidden backdrop-blur-md ${cardSizes[size as keyof typeof cardSizes]}`}
+        className={`relative rounded-2xl border border-white/15 bg-gradient-to-b from-[#141522] via-[#0d0e17] to-[#08080f] font-mono font-black text-white shadow-[0_12px_28px_rgba(0,0,0,0.6)] flex items-center justify-center overflow-hidden backdrop-blur-xl ${cardSizes[size as keyof typeof cardSizes]}`}
       >
-        {/* Horizontal Card Divider Line */}
-        <div className="absolute inset-x-0 top-1/2 h-[1px] bg-black/60 z-10 shadow-sm" />
+        {/* Top Card Specular Reflection */}
+        <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
 
-        {/* Animated Digits */}
+        {/* Horizontal Mechanical Groove & Divider */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[2px] bg-black/80 z-20 shadow-sm" />
+
+        {/* Side Mechanical Hinge Notches */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-3 bg-black rounded-r-sm z-30" />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-3 bg-black rounded-l-sm z-30" />
+
+        {/* Animated Digits with Neon Glow */}
         <AnimatePresence mode="popLayout">
           <motion.span
             key={formatted}
-            initial={{ y: -16, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 16, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="text-primary drop-shadow-[0_0_12px_rgba(0,255,157,0.4)]"
+            initial={{ y: -16, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 16, opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="text-primary drop-shadow-[0_0_16px_rgba(0,255,157,0.5)] z-10"
           >
             {formatted}
           </motion.span>
@@ -52,7 +59,7 @@ function DigitCard({ value, label, size = 'md' }: { value: number; label: string
       </div>
 
       <span
-        className={`mt-2 font-mono uppercase tracking-widest text-neutral-400 font-semibold ${labelSizes[size as keyof typeof labelSizes]}`}
+        className={`mt-2.5 font-mono uppercase tracking-widest text-neutral-400 font-bold ${labelSizes[size as keyof typeof labelSizes]}`}
       >
         {label}
       </span>
@@ -121,28 +128,28 @@ export default function FlipCountdown({
 
   return (
     <div className="flex flex-col items-center">
-      {/* Dynamic Status / Mode Label */}
-      <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+      {/* Dynamic Status / Mode Badge */}
+      <div className="mb-5 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-[#0d0e17]/80 backdrop-blur-xl shadow-lg">
         <span
-          className={`w-2 h-2 rounded-full ${
+          className={`w-2.5 h-2.5 rounded-full ${
             view.status === 'running'
-              ? 'bg-primary animate-pulse'
+              ? 'bg-primary animate-pulse shadow-[0_0_10px_rgba(0,255,157,0.8)]'
               : isPaused
-              ? 'bg-amber-400 animate-pulse'
+              ? 'bg-amber-400 animate-pulse shadow-[0_0_10px_rgba(251,191,36,0.8)]'
               : 'bg-neutral-500'
           }`}
         />
         <span
-          className={`font-mono text-xs font-semibold tracking-wider uppercase ${
-            isPaused ? 'text-amber-400' : 'text-neutral-300'
+          className={`font-mono text-xs font-bold tracking-widest uppercase ${
+            isPaused ? 'text-amber-400' : 'text-neutral-200'
           }`}
         >
           {view.label}
         </span>
       </div>
 
-      {/* Flip Clock Grid */}
-      <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+      {/* 3D Flip Clock Grid */}
+      <div className="flex items-center gap-2 sm:gap-4 md:gap-5">
         <DigitCard value={view.days} label="Days" size={size} />
         <span className="font-mono text-2xl sm:text-4xl text-neutral-600 font-extrabold pb-6">:</span>
         <DigitCard value={view.hours} label="Hours" size={size} />
@@ -156,15 +163,15 @@ export default function FlipCountdown({
       {showProgress && (view.status === 'running' || isPaused) && (
         <div className="w-full max-w-md sm:max-w-lg mt-6 space-y-1.5">
           <div className="flex justify-between font-mono text-[11px] text-neutral-400">
-            <span>Progress: {view.progressPercent}%</span>
-            <span>24h Marathon</span>
+            <span>Marathon Elapsed: {view.progressPercent}%</span>
+            <span>24h Countdown</span>
           </div>
           <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden backdrop-blur-md">
             <div
               className={`h-full rounded-full transition-all duration-1000 ${
                 isPaused
                   ? 'bg-amber-400'
-                  : 'bg-gradient-to-r from-primary via-[#00ffcc] to-accent'
+                  : 'bg-gradient-to-r from-primary via-[#00f0ff] to-accent shadow-[0_0_12px_rgba(0,255,157,0.5)]'
               }`}
               style={{ width: `${view.progressPercent}%` }}
             />
