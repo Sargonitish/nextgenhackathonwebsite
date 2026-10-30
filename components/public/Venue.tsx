@@ -20,16 +20,16 @@ export default function Venue({
         {/* Left Column: Details */}
         <div className="lg:col-span-7 space-y-4">
           <h2 className="font-display font-black text-3xl sm:text-5xl text-offwhite tracking-tight">
-            {name}
+            {name || 'MAIN AUDITORIUM & INNOVATION HUB'}
           </h2>
 
           <p className="font-mono text-xs sm:text-sm text-offwhite/70 tracking-wider">
-            {address}
+            {address || 'CAMPUS RESEARCH PARK, BLOCK 4, 3RD FLOOR'}
           </p>
 
           <div className="pt-4">
             <a
-              href="https://maps.google.com"
+              href={mapEmbedUrl || 'https://maps.google.com'}
               target="_blank"
               rel="noreferrer"
               className="font-mono text-xs sm:text-sm text-yellow hover:underline underline-offset-4 tracking-wider inline-flex items-center gap-1.5"

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 import Team from '@/models/Team';
@@ -83,6 +84,14 @@ export async function PATCH(
     }
 
     await event.save();
+
+    // Invalidate Next.js cache so the public site updates immediately on refresh
+    try {
+      revalidatePath('/');
+      revalidatePath('/live');
+    } catch (e) {
+      console.warn('Cache revalidation warning:', e);
+    }
 
     return NextResponse.json({
       success: true,

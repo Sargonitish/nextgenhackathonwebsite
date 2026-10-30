@@ -2,6 +2,7 @@ import { getActiveEvent } from '@/lib/activeEvent';
 import Link from 'next/link';
 import BlueprintBackground from '@/components/public/BlueprintBackground';
 import CustomCursor from '@/components/public/CustomCursor';
+import AnnouncementTicker from '@/components/public/AnnouncementTicker';
 import Navbar from '@/components/public/Navbar';
 import Hero from '@/components/public/Hero';
 import About from '@/components/public/About';
@@ -61,6 +62,10 @@ export default async function HomePage() {
   const plainEvent = JSON.parse(JSON.stringify(event));
   const sections = plainEvent.branding?.sections || {};
 
+  // Prioritize heroTitle from Content, fall back to event.name from Branding
+  const displayTitle = plainEvent.content?.heroTitle || plainEvent.name || 'HACKX';
+  const displayTagline = plainEvent.content?.heroTagline;
+
   return (
     <div className="min-h-dvh bg-navy text-offwhite relative flex flex-col selection:bg-yellow selection:text-navy">
       {/* 1. Custom Desktop Crosshair Cursor */}
@@ -69,20 +74,24 @@ export default async function HomePage() {
       {/* 2. Blueprint 48px Graph-Paper Grid & Autonomous Agents Canvas */}
       <BlueprintBackground />
 
-      {/* 3. Flat Sticky Blueprint Navbar */}
+      {/* 3. Sticky Blueprint Navbar (Dynamic logo and sections) */}
       <Navbar
-        eventName={plainEvent.name}
+        eventName={displayTitle}
         logoUrl={plainEvent.branding?.logoUrl}
         sections={sections}
         registrationOpen={plainEvent.settings?.registrationOpen ?? true}
       />
 
-      {/* Main Blueprint Sections (Asymmetric & Left-Aligned) */}
+      {/* 4. Live Broadcast Marquee Ticker */}
+      <AnnouncementTicker />
+
+      {/* Main Blueprint Sections */}
       <main className="flex-1 flex flex-col">
-        {/* 4. Asymmetric Hero with Outlined 2026 & Mono Row Countdown */}
+        {/* 5. Asymmetric Hero with Outlined 2026, Dynamic Tagline & Telemetry Box */}
         {sections.hero !== false && (
           <Hero
-            title={plainEvent.name || 'HACKX'}
+            title={displayTitle}
+            tagline={displayTagline}
             collegeName={plainEvent.content?.collegeName || 'COLLEGE OF ENGINEERING'}
             year={plainEvent.year || 2026}
             timer={plainEvent.timer}
@@ -91,7 +100,7 @@ export default async function HomePage() {
           />
         )}
 
-        {/* 5. Manifesto About Section (60/40 Asymmetric Split & Stats Strip) */}
+        {/* 6. Manifesto About Section (Dynamic Title, Dynamic Paragraphs, Stats) */}
         {sections.about !== false && (
           <About
             title={plainEvent.content?.aboutTitle}
@@ -100,19 +109,19 @@ export default async function HomePage() {
           />
         )}
 
-        {/* 6. Numbered Hairline Rows (01–04) Tracks List */}
+        {/* 7. Numbered Hairline Rows (01–04) Tracks List */}
         {sections.tracks !== false && <Tracks tracks={plainEvent.tracks || []} />}
 
-        {/* 7. Vertical Timeline Schedule with Real-time Active Milestone */}
+        {/* 8. Vertical Timeline Schedule with Real-time Active Milestone */}
         {sections.schedule !== false && <Schedule schedule={plainEvent.schedule || []} />}
 
-        {/* 8. Asymmetric Staggered Prizes with Oversized Numerals (1, 2, 3) */}
+        {/* 9. Asymmetric Staggered Prizes with Oversized Numerals (1, 2, 3) */}
         {sections.prizes !== false && <Prizes prizes={plainEvent.prizes || []} />}
 
-        {/* 9. Rules List (Compact 1–10) */}
+        {/* 10. Rules List (Compact 1–10) */}
         {sections.rules !== false && <Rules rulesText={plainEvent.content?.rulesText || ''} />}
 
-        {/* 10. Team Photo Grid (Square placeholders, grayscale -> color hover) */}
+        {/* 11. Team Photo Grid (Square placeholders, grayscale -> color hover) */}
         {sections.coordinators !== false && (
           <Coordinators
             coordinators={plainEvent.coordinators || []}
@@ -120,7 +129,7 @@ export default async function HomePage() {
           />
         )}
 
-        {/* 11. Sponsors Grid with Hairlines */}
+        {/* 12. Sponsors Grid with Hairlines */}
         {sections.sponsors !== false && (
           <Sponsors
             sponsors={plainEvent.sponsors || []}
@@ -128,10 +137,10 @@ export default async function HomePage() {
           />
         )}
 
-        {/* 12. FAQs Accordion with + / − Toggles */}
+        {/* 13. FAQs Accordion with + / − Toggles */}
         {sections.faq !== false && <Faq faqs={plainEvent.faqs || []} />}
 
-        {/* 13. Venue with Technical Crosshair Coordinates Pin */}
+        {/* 14. Venue with Technical Crosshair Coordinates Pin & Dynamic Map Link */}
         {sections.venue !== false && (
           <Venue
             name={plainEvent.content?.venueName}
@@ -141,10 +150,10 @@ export default async function HomePage() {
         )}
       </main>
 
-      {/* 14. Footer with Oversized Cropped Wordmark & 5-Click Easter Egg */}
+      {/* 15. Footer with Dynamic Name, All Socials & 5-Click Easter Egg */}
       {sections.contact !== false && (
         <Footer
-          eventName={plainEvent.name}
+          eventName={displayTitle}
           contactEmail={plainEvent.content?.contactEmail}
           socials={plainEvent.content?.socials}
           madeBy={plainEvent.content?.madeBy || 'Made by students for builders worldwide'}

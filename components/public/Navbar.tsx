@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 
 interface NavbarProps {
@@ -13,32 +14,53 @@ interface NavbarProps {
 
 export default function Navbar({
   eventName = 'HACKX',
+  logoUrl,
+  sections = {},
   registrationOpen = true,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const links = [
-    { label: 'About', href: '#about' },
-    { label: 'Tracks', href: '#tracks' },
-    { label: 'Schedule', href: '#schedule' },
-    { label: 'Prizes', href: '#prizes' },
-    { label: 'FAQs', href: '#faqs' },
+  // Dynamically filter links according to sections configured in Admin Portal
+  const allLinks = [
+    { label: 'About', href: '#about', show: sections.about !== false },
+    { label: 'Tracks', href: '#tracks', show: sections.tracks !== false },
+    { label: 'Schedule', href: '#schedule', show: sections.schedule !== false },
+    { label: 'Prizes', href: '#prizes', show: sections.prizes !== false },
+    { label: 'Rules', href: '#rules', show: sections.rules !== false },
+    { label: 'Team', href: '#coordinators', show: sections.coordinators !== false },
+    { label: 'Sponsors', href: '#sponsors', show: sections.sponsors !== false },
+    { label: 'FAQs', href: '#faqs', show: sections.faq !== false },
+    { label: 'Venue', href: '#venue', show: sections.venue !== false },
   ];
+
+  const links = allLinks.filter((l) => l.show);
 
   return (
     <>
       <header className="sticky top-0 z-50 w-full bg-navy border-b border-line">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo / Brand Name */}
           <Link
             href="/"
-            className="font-mono font-bold text-lg text-offwhite tracking-wider hover:text-yellow transition-colors"
+            className="flex items-center gap-3 font-mono font-bold text-lg text-offwhite tracking-wider hover:text-yellow transition-colors"
           >
-            {eventName || 'HACKX'}
+            {logoUrl ? (
+              <div className="relative h-8 w-28">
+                <Image
+                  src={logoUrl}
+                  alt={eventName || 'Event Logo'}
+                  fill
+                  className="object-contain"
+                  unoptimized
+                />
+              </div>
+            ) : (
+              <span>{eventName || 'HACKX'}</span>
+            )}
           </Link>
 
-          {/* Desktop Nav Links (5 links in JetBrains Mono) */}
-          <nav className="hidden md:flex items-center gap-8 font-mono text-xs">
+          {/* Desktop Nav Links */}
+          <nav className="hidden md:flex items-center gap-7 font-mono text-xs">
             {links.map((link) => (
               <a
                 key={link.label}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Megaphone, Zap } from 'lucide-react';
 
 interface Announcement {
   _id: string;
@@ -19,31 +18,33 @@ export default function AnnouncementTicker() {
         setAnnouncements(data.announcements || []);
       }
     } catch {
-      // Silent error for public ticker polling
+      // Silent error for public ticker
     }
   };
 
   useEffect(() => {
     fetchAnnouncements();
-    const interval = setInterval(fetchAnnouncements, 20000); // 20s poll
+    const interval = setInterval(fetchAnnouncements, 20000);
     return () => clearInterval(interval);
   }, []);
 
   if (announcements.length === 0) return null;
 
   return (
-    <div className="relative z-30 w-full border-b border-primary/20 bg-[#08080c]/90 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-3 overflow-hidden">
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary font-mono text-[11px] font-bold uppercase tracking-wider flex-shrink-0 shadow-[0_0_10px_rgba(0,255,157,0.2)]">
-          <Zap className="w-3.5 h-3.5 animate-pulse text-primary" />
-          <span>LIVE BROADCAST</span>
+    <div className="relative z-30 w-full border-b border-line bg-navy/90 font-mono">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-2 flex items-center gap-4 overflow-hidden">
+        {/* Live Broadcast Badge */}
+        <div className="flex items-center gap-2 px-2.5 py-0.5 border border-yellow bg-yellow/10 text-yellow text-[11px] font-bold uppercase tracking-wider shrink-0 select-none">
+          <span className="w-1.5 h-1.5 bg-yellow animate-pulse" />
+          <span>BROADCAST</span>
         </div>
 
+        {/* Marquee message loop */}
         <div className="overflow-hidden whitespace-nowrap flex-1">
-          <div className="inline-block animate-marquee font-mono text-xs text-neutral-300">
+          <div className="inline-block animate-marquee text-xs text-offwhite/80">
             {announcements.map((a) => (
-              <span key={a._id} className="mx-6">
-                ⚡ <span className="text-white font-semibold">{a.message}</span>
+              <span key={a._id} className="mx-6 tracking-wide">
+                &gt;&gt; <span className="text-offwhite font-bold">{a.message}</span>
               </span>
             ))}
           </div>
@@ -62,7 +63,7 @@ export default function AnnouncementTicker() {
         .animate-marquee {
           display: inline-block;
           white-space: nowrap;
-          animation: marquee 25s linear infinite;
+          animation: marquee 28s linear infinite;
         }
         .animate-marquee:hover {
           animation-play-state: paused;

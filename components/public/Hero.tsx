@@ -16,6 +16,7 @@ interface HeroProps {
 
 export default function Hero({
   title = 'HACKX',
+  tagline,
   collegeName = 'COLLEGE OF ENGINEERING',
   year = 2026,
   timer,
@@ -82,8 +83,12 @@ export default function Hero({
     return () => clearInterval(interval);
   }, [timer]);
 
-  const solidChars = title.toUpperCase().split('');
-  const outlinedChars = String(year).split('');
+  // Clean title: strip trailing 4-digit year if present so it doesn't double-render
+  const cleanTitle = title.replace(/\s*\b\d{4}\b\s*$/, '').trim() || title;
+  const displayYear = title.match(/\b\d{4}\b$/)?.[0] || String(year);
+
+  const solidChars = cleanTitle.toUpperCase().split('');
+  const outlinedChars = displayYear.split('');
 
   return (
     <section className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-8 pt-8 sm:pt-14 pb-16 flex flex-col justify-start text-left">
@@ -141,9 +146,9 @@ export default function Hero({
             <span className="text-yellow">→|</span>
           </div>
 
-          {/* Casual Student Voice Subhead */}
+          {/* Student Voice Subhead / Dynamic Tagline */}
           <p className="max-w-2xl font-mono text-xs sm:text-sm md:text-base text-offwhite/80 leading-relaxed">
-            24 hours. Build an agent that actually does something. Free food, loud music, one trophy.
+            {tagline || '24 hours. Build an agent that actually does something. Free food, loud music, one trophy.'}
           </p>
 
           {/* Fast-Spec Feature Badges */}

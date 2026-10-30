@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectDB from '@/lib/db';
 import Event from '@/models/Event';
 import Announcement from '@/models/Announcement';
@@ -60,6 +61,10 @@ export async function POST(request: NextRequest) {
       eventId: event._id,
       message: message.trim(),
     });
+
+    try {
+      revalidatePath('/');
+    } catch {}
 
     return NextResponse.json({
       success: true,
