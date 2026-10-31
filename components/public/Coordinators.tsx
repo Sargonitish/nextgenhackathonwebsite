@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { Phone, Mail, Linkedin, Users, GraduationCap, Award } from 'lucide-react';
+import { Phone, Mail, Linkedin, GraduationCap, Award } from 'lucide-react';
 
 export interface CoordinatorItem {
   _id?: string;
@@ -15,10 +15,9 @@ export interface CoordinatorItem {
   linkedin?: string;
   department?: string;
   college?: string;
-  duty?: string;
 }
 
-const DEFAULT_TEAM: CoordinatorItem[] = [
+const DEFAULT_COORDINATORS: CoordinatorItem[] = [
   {
     name: 'Dr. S. Rajagopalan',
     role: 'Faculty Coordinator (Head of CSE)',
@@ -51,99 +50,27 @@ const DEFAULT_TEAM: CoordinatorItem[] = [
   },
   {
     name: 'Sneha Reddy',
-    role: 'Operations & Tech Infrastructure',
+    role: 'Joint Student Coordinator',
     type: 'student',
     phone: '+91 98765 43210',
     email: 'sneha.reddy@student.edu',
-    department: 'ECE / 3rd Year',
+    department: 'ECE / 4th Year',
     photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
-    linkedin: 'https://linkedin.com',
-  },
-  {
-    name: 'Karan Malhotra',
-    role: 'Sponsorships & Industry Liaisons',
-    type: 'student',
-    phone: '+91 94455 66778',
-    email: 'karan.m@student.edu',
-    department: 'AI & Data Science',
-    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    linkedin: 'https://linkedin.com',
-  },
-  {
-    name: 'Diya Patel',
-    role: 'Registration Desk & Logistics Lead',
-    type: 'student',
-    phone: '+91 98888 77766',
-    email: 'diya.patel@student.edu',
-    department: 'CSE / 3rd Year',
-    photoUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop',
     linkedin: 'https://linkedin.com',
   },
 ];
 
 export default function Coordinators({
   coordinators = [],
-  showOrganizers = true,
 }: {
-  coordinators: CoordinatorItem[];
-  showOrganizers?: boolean;
+  coordinators?: CoordinatorItem[];
 }) {
   const [filter, setFilter] = useState<'all' | 'faculty' | 'student'>('all');
-  const [mergedTeam, setMergedTeam] = useState<CoordinatorItem[]>([]);
 
-  useEffect(() => {
-    async function loadOrganizers() {
-      // 1. Start with coordinators from Event model (or defaults if empty)
-      const baseList: CoordinatorItem[] =
-        coordinators && coordinators.length > 0 ? [...coordinators] : [...DEFAULT_TEAM];
+  const displayList =
+    coordinators && coordinators.length > 0 ? coordinators : DEFAULT_COORDINATORS;
 
-      if (!showOrganizers) {
-        setMergedTeam(baseList);
-        return;
-      }
-
-      // 2. Fetch approved organizers with showOnWebsite: true
-      try {
-        const res = await fetch('/api/public/organizers');
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data.organizers) && data.organizers.length > 0) {
-            const formatted: CoordinatorItem[] = data.organizers.map((org: any) => ({
-              _id: org._id,
-              name: org.name,
-              role: org.duty ? org.duty.replace(/_/g, ' ').toUpperCase() : 'ORGANIZER',
-              type: org.type === 'faculty' ? 'faculty' : 'student',
-              phone: org.phone,
-              email: org.email,
-              photoUrl: org.photoUrl,
-              department: org.department,
-              college: org.college,
-              duty: org.duty,
-            }));
-
-            // Avoid duplicate entries if name matches
-            const existingNames = new Set(baseList.map((m) => m.name.toLowerCase().trim()));
-            const nonDuplicates = formatted.filter(
-              (o) => !existingNames.has(o.name.toLowerCase().trim())
-            );
-
-            setMergedTeam([...baseList, ...nonDuplicates]);
-            return;
-          }
-        }
-      } catch (err) {
-        console.warn('Failed to load public organizers:', err);
-      }
-
-      setMergedTeam(baseList);
-    }
-
-    loadOrganizers();
-  }, [coordinators, showOrganizers]);
-
-  if (!showOrganizers && mergedTeam.length === 0) return null;
-
-  const filteredTeam = mergedTeam.filter((m) => {
+  const filteredTeam = displayList.filter((m) => {
     if (filter === 'all') return true;
     return m.type === filter;
   });
@@ -161,17 +88,17 @@ export default function Coordinators({
     <section id="coordinators" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       {/* Section Header Metadata */}
       <div className="flex items-center justify-between font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-8">
-        <div>05 / TEAM &amp; ORGANIZERS</div>
-        <div className="hidden sm:inline">[PERSONNEL TELEMETRY // DIRECT CONTACT]</div>
+        <div>05 / EVENT COORDINATORS</div>
+        <div className="hidden sm:inline">[FACULTY DIRECTORS &amp; LEAD COORDINATORS]</div>
       </div>
 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
           <h2 className="font-display text-2xl sm:text-3xl font-black text-offwhite uppercase tracking-tight">
-            ORGANIZING COMMITTEE &amp; LEADS
+            FACULTY DIRECTORS &amp; LEAD COORDINATORS
           </h2>
           <p className="font-mono text-xs sm:text-sm text-offwhite/70 mt-2 max-w-2xl leading-relaxed">
-            Faculty directors, core student leads, and logistics coordinators responsible for event execution. Reach out directly for support.
+            Faculty chairs and student directors supervising event governance, mentor panels, challenge design, and judging integrity.
           </p>
         </div>
 
@@ -186,7 +113,7 @@ export default function Coordinators({
                 : 'border-line text-offwhite/70 hover:border-yellow'
             }`}
           >
-            ALL [{mergedTeam.length}]
+            ALL [{displayList.length}]
           </button>
           <button
             type="button"
@@ -208,13 +135,13 @@ export default function Coordinators({
                 : 'border-line text-offwhite/70 hover:border-yellow'
             }`}
           >
-            STUDENTS
+            STUDENT LEADS
           </button>
         </div>
       </div>
 
-      {/* Grid of Coordinator & Organizer Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Grid of Coordinator Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredTeam.map((member, idx) => {
           const isFaculty = member.type === 'faculty';
 
@@ -237,14 +164,14 @@ export default function Coordinators({
                         : 'border-line bg-navy text-offwhite/70'
                     }`}
                   >
-                    {isFaculty ? '[ FACULTY COORDINATOR ]' : '[ STUDENT COMMITTEE ]'}
+                    {isFaculty ? '[ FACULTY DIRECTOR ]' : '[ LEAD COORDINATOR ]'}
                   </span>
                   <span className="text-offwhite/40">#0{idx + 1}</span>
                 </div>
 
                 {/* Profile Header: Avatar + Name + Role */}
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 bg-navy border border-line flex items-center justify-center overflow-hidden relative shadow-sm">
+                <div className="space-y-3">
+                  <div className="w-full aspect-square bg-navy border border-line flex items-center justify-center overflow-hidden relative shadow-sm">
                     {member.photoUrl ? (
                       <Image
                         src={member.photoUrl}
@@ -254,14 +181,14 @@ export default function Coordinators({
                         unoptimized
                       />
                     ) : (
-                      <div className="font-display font-black text-2xl text-offwhite/40 group-hover:text-yellow transition-colors select-none">
+                      <div className="font-display font-black text-3xl text-offwhite/40 group-hover:text-yellow transition-colors select-none">
                         {getInitials(member.name)}
                       </div>
                     )}
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-bold text-base sm:text-lg text-offwhite group-hover:text-yellow transition-colors truncate">
+                  <div>
+                    <h3 className="font-display font-bold text-base text-offwhite group-hover:text-yellow transition-colors truncate">
                       {member.name}
                     </h3>
                     <p className="font-mono text-xs text-yellow font-bold mt-0.5 leading-snug">
@@ -278,47 +205,34 @@ export default function Coordinators({
 
               {/* Direct Contact Details Plate */}
               <div className="mt-5 pt-3.5 border-t border-line font-mono text-xs space-y-2">
-                {/* Phone Link */}
-                {member.phone ? (
+                {member.phone && (
                   <div className="flex items-center justify-between">
                     <span className="text-offwhite/40 text-[10px] uppercase">PHONE:</span>
                     <a
                       href={`tel:${member.phone.replace(/\s+/g, '')}`}
-                      className="text-yellow hover:underline flex items-center gap-1.5 font-bold tracking-wider"
+                      className="text-yellow hover:underline flex items-center gap-1.5 font-bold tracking-wider text-[11px]"
                       title={`Call ${member.name}`}
                     >
-                      <Phone className="w-3 h-3 text-yellow" />
+                      <Phone className="w-3 h-3 text-yellow shrink-0" />
                       <span>{member.phone}</span>
                     </a>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between text-[11px] text-offwhite/30">
-                    <span>PHONE:</span>
-                    <span>VIA HELPDESK</span>
-                  </div>
                 )}
 
-                {/* Email Link */}
-                {member.email ? (
+                {member.email && (
                   <div className="flex items-center justify-between">
                     <span className="text-offwhite/40 text-[10px] uppercase">EMAIL:</span>
                     <a
                       href={`mailto:${member.email}`}
-                      className="text-offwhite hover:text-yellow flex items-center gap-1.5 max-w-[200px] truncate text-[11px]"
+                      className="text-offwhite hover:text-yellow flex items-center gap-1.5 max-w-[170px] truncate text-[11px]"
                       title={`Email ${member.name}`}
                     >
-                      <Mail className="w-3 h-3 text-offwhite/50 group-hover:text-yellow" />
+                      <Mail className="w-3 h-3 text-offwhite/50 group-hover:text-yellow shrink-0" />
                       <span className="truncate">{member.email}</span>
                     </a>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between text-[11px] text-offwhite/30">
-                    <span>EMAIL:</span>
-                    <span>HACKX@COLLEGE.EDU</span>
-                  </div>
                 )}
 
-                {/* LinkedIn Profile */}
                 {member.linkedin && (
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-offwhite/40 text-[10px] uppercase">NETWORK:</span>

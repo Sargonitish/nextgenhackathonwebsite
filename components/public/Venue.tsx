@@ -13,7 +13,7 @@ export default function Venue({
     <section id="venue" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       {/* Section Label */}
       <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-10">
-        08 / VENUE
+        10 / VENUE
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">

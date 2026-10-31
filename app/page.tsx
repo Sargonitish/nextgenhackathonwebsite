@@ -11,6 +11,7 @@ import Schedule from '@/components/public/Schedule';
 import Prizes from '@/components/public/Prizes';
 import Rules from '@/components/public/Rules';
 import Coordinators from '@/components/public/Coordinators';
+import Organizers from '@/components/public/Organizers';
 import Sponsors from '@/components/public/Sponsors';
 import Gallery from '@/components/public/Gallery';
 import Faq from '@/components/public/Faq';
@@ -122,15 +123,15 @@ export default async function HomePage() {
         {/* 10. Rules List (Compact 1–10) */}
         {sections.rules !== false && <Rules rulesText={plainEvent.content?.rulesText || ''} />}
 
-        {/* 11. Team Photo Grid (Square placeholders, grayscale -> color hover) */}
+        {/* 11. Event Coordinators (Faculty & Lead Student Coordinators) */}
         {sections.coordinators !== false && (
-          <Coordinators
-            coordinators={plainEvent.coordinators || []}
-            showOrganizers={sections.organizers !== false}
-          />
+          <Coordinators coordinators={plainEvent.coordinators || []} />
         )}
 
-        {/* 12. Sponsors Grid with Hairlines */}
+        {/* 12. Organizing Committee & Operations Desks */}
+        {sections.organizers !== false && <Organizers />}
+
+        {/* 13. Sponsors Grid with Hairlines */}
         {sections.sponsors !== false && (
           <Sponsors
             sponsors={plainEvent.sponsors || []}

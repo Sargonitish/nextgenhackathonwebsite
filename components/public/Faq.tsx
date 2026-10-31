@@ -44,7 +44,7 @@ export default function Faq({ faqs = [] }: { faqs: FaqItem[] }) {
     <section id="faqs" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       {/* Section Label */}
       <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-10">
-        07 / FAQS
+        09 / FAQS
       </div>
 
       <h2 className="sr-only">Frequently Asked Questions</h2>

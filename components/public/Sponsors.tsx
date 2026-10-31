@@ -23,7 +23,7 @@ export default function Sponsors({
     <section id="sponsors" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       {/* Section Header */}
       <div className="flex items-center justify-between font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-8">
-        <div>06 / PARTNERS &amp; SPONSORS</div>
+        <div>07 / PARTNERS &amp; SPONSORS</div>
         <div className="hidden sm:inline">[INDUSTRY BACKERS // CLOUD CREDITS]</div>
       </div>
 
