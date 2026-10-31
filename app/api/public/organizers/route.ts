@@ -11,7 +11,7 @@ export async function GET() {
       status: 'approved',
       showOnWebsite: true,
     })
-      .select('name type duty photoUrl')
+      .select('name type duty photoUrl phone email department college yearOrDesignation')
       .lean();
 
     return NextResponse.json({ organizers });
