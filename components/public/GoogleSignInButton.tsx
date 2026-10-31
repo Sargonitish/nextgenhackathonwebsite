@@ -35,7 +35,9 @@ export default function GoogleSignInButton({
   const [gsiReady, setGsiReady] = useState(false);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
 
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const clientId =
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+    '63130357409-hi1hfqt1ofc94pup9fm60ck46okmshhb.apps.googleusercontent.com';
 
   useEffect(() => {
     setIsConfigured(Boolean(clientId && clientId !== ''));

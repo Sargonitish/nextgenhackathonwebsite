@@ -27,7 +27,9 @@ export async function POST(request: NextRequest) {
     const payload = await response.json();
 
     // Verify audience matches client ID if NEXT_PUBLIC_GOOGLE_CLIENT_ID is configured
-    const expectedClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const expectedClientId =
+      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+      '63130357409-hi1hfqt1ofc94pup9fm60ck46okmshhb.apps.googleusercontent.com';
     if (expectedClientId && payload.aud !== expectedClientId) {
       return NextResponse.json(
         { error: 'Google Client ID mismatch' },
