@@ -84,6 +84,15 @@ export default function Coordinators({
       .slice(0, 2);
   };
 
+  const normalizeUrl = (url?: string): string => {
+    if (!url) return '#';
+    const trimmed = url.trim();
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed;
+    }
+    return `https://${trimmed}`;
+  };
+
   return (
     <section id="coordinators" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       {/* Section Header Metadata */}
@@ -237,7 +246,7 @@ export default function Coordinators({
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-offwhite/40 text-[10px] uppercase">NETWORK:</span>
                     <a
-                      href={member.linkedin}
+                      href={normalizeUrl(member.linkedin)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-offwhite/60 hover:text-yellow flex items-center gap-1 text-[11px] transition-colors"

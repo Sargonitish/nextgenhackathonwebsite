@@ -41,6 +41,13 @@ export default function Footer({
     }
   };
 
+  const normalizeUrl = (url?: string) => {
+    if (!url) return '#';
+    const trimmed = url.trim();
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
+
   return (
     <footer className="border-t border-line bg-navy pt-16 overflow-hidden relative z-10 font-mono">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
@@ -66,7 +73,7 @@ export default function Footer({
 
             {socials.instagram && (
               <a
-                href={socials.instagram}
+                href={normalizeUrl(socials.instagram)}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-yellow transition-colors inline-flex items-center gap-1.5"
@@ -78,7 +85,7 @@ export default function Footer({
 
             {socials.linkedin && (
               <a
-                href={socials.linkedin}
+                href={normalizeUrl(socials.linkedin)}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-yellow transition-colors inline-flex items-center gap-1.5"
@@ -90,7 +97,7 @@ export default function Footer({
 
             {socials.twitter && (
               <a
-                href={socials.twitter}
+                href={normalizeUrl(socials.twitter)}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-yellow transition-colors inline-flex items-center gap-1.5"
@@ -102,7 +109,7 @@ export default function Footer({
 
             {(socials.discord || socials.whatsapp) && (
               <a
-                href={socials.discord || socials.whatsapp}
+                href={normalizeUrl(socials.discord || socials.whatsapp)}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-yellow transition-colors inline-flex items-center gap-1.5"
@@ -114,7 +121,7 @@ export default function Footer({
 
             {socials.website && (
               <a
-                href={socials.website}
+                href={normalizeUrl(socials.website)}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-yellow transition-colors inline-flex items-center gap-1.5"

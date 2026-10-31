@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
       college: m.college.trim(),
       department: m.department.trim(),
       year: m.year,
+      registerNumber: (m.registerNumber || '').trim(),
       isLeader: index === 0,
       present: false,
     }));

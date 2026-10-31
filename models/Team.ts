@@ -8,6 +8,7 @@ export interface ITeamMember {
   college: string;
   department: string;
   year: number | string;
+  registerNumber?: string;
   isLeader: boolean;
   present: boolean;
 }
@@ -44,6 +45,7 @@ const MemberSchema = new Schema<ITeamMember>({
   college: { type: String, required: true, trim: true },
   department: { type: String, required: true, trim: true },
   year: { type: Schema.Types.Mixed, required: true },
+  registerNumber: { type: String, trim: true, default: '' },
   isLeader: { type: Boolean, default: false },
   present: { type: Boolean, default: false },
 });

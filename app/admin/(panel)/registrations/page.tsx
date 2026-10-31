@@ -345,7 +345,7 @@ export default function RegistrationsPage() {
                       <div className="text-[11px] text-neutral-400 mt-1 space-y-0.5">
                         <div>📧 {m.email}</div>
                         <div>📞 {m.phone}</div>
-                        <div>🏛 {m.college} • {m.department} (Year {m.year})</div>
+                        <div>🏛 {m.college} • {m.department} (Year {m.year}) {m.registerNumber ? `• Reg: ${m.registerNumber}` : ''}</div>
                       </div>
                     </div>
                   </div>

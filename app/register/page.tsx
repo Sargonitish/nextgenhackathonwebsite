@@ -59,8 +59,8 @@ export default function RegisterPage() {
       teamName: '',
       track: '',
       members: [
-        { name: '', email: '', phone: '', college: '', department: '', year: '3' },
-        { name: '', email: '', phone: '', college: '', department: '', year: '3' },
+        { name: '', email: '', phone: '', college: '', department: '', year: '3', registerNumber: '' },
+        { name: '', email: '', phone: '', college: '', department: '', year: '3', registerNumber: '' },
       ],
       agreeRules: false,
       honeypot: '',
@@ -466,6 +466,7 @@ export default function RegisterPage() {
                       college: '',
                       department: '',
                       year: '3',
+                      registerNumber: '',
                     })
                   }
                   className="px-3 py-1.5 border border-yellow bg-yellow/10 text-yellow hover:bg-yellow hover:text-navy flex items-center gap-1.5 transition-colors font-bold uppercase text-[11px]"
@@ -650,6 +651,23 @@ export default function RegisterPage() {
                         <option value="4">4th Year</option>
                         <option value="5">5th Year / PG</option>
                       </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-offwhite/60 text-[10px] uppercase mb-1">
+                        Register / Roll Number *
+                      </label>
+                      <input
+                        type="text"
+                        {...register(`members.${index}.registerNumber` as const)}
+                        placeholder="e.g. 714021104001 / USN"
+                        className="w-full px-3 py-2 bg-navy border border-line text-offwhite focus:outline-none focus:border-yellow text-xs font-mono"
+                      />
+                      {errors.members?.[index]?.registerNumber && (
+                        <span className="text-red-400 text-[10px] mt-0.5 block">
+                          {errors.members[index]?.registerNumber?.message}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

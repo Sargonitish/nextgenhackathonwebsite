@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Phone, Mail, ShieldCheck, UserCheck, Layers } from 'lucide-react';
+import { Phone, Mail } from 'lucide-react';
 
 export interface OrganizerItem {
   _id?: string;
@@ -181,37 +180,15 @@ export default function Organizers() {
                 +
               </span>
 
-              {/* Top: Duty Tag & Type */}
+              {/* Top: Duty Tag & Role Stamp */}
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="inline-block px-2 py-0.5 border border-yellow/40 bg-yellow/10 font-mono text-[9px] uppercase tracking-wider text-yellow font-semibold">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="inline-block px-2 py-0.5 border border-yellow/40 bg-yellow/10 font-mono text-[9px] uppercase tracking-wider text-yellow font-bold truncate">
                     [ {dutyLabel} ]
                   </span>
-                  <span className="font-mono text-[9px] text-offwhite/40 tracking-wider">
-                    ORD #{String(index + 1).padStart(2, '0')}
+                  <span className="font-mono text-[9px] text-offwhite/40 tracking-wider shrink-0">
+                    {org.type ? `[ ${org.type.toUpperCase()} ]` : `#${String(index + 1).padStart(2, '0')}`}
                   </span>
-                </div>
-
-                {/* Photo / Avatar */}
-                <div className="w-full aspect-square border border-line mb-4 relative overflow-hidden bg-white/[0.02]">
-                  {org.photoUrl ? (
-                    <Image
-                      src={org.photoUrl}
-                      alt={org.name}
-                      fill
-                      className="object-cover filter grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-300"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center font-mono text-offwhite/30 text-xs">
-                      <UserCheck className="w-8 h-8 mb-2 text-offwhite/20 group-hover:text-yellow transition-colors" />
-                      <span>{org.name.slice(0, 2).toUpperCase()}</span>
-                    </div>
-                  )}
-
-                  <div className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-navy/90 border border-line font-mono text-[8px] text-offwhite/60 tracking-wider">
-                    {org.type ? `ROLE: ${org.type.toUpperCase()}` : 'ACTIVE STAFF'}
-                  </div>
                 </div>
 
                 {/* Name & Academic Credentials */}
@@ -220,13 +197,13 @@ export default function Organizers() {
                 </h3>
 
                 {org.yearOrDesignation && (
-                  <p className="font-mono text-xs text-yellow mt-0.5 tracking-wide">
+                  <p className="font-mono text-xs text-yellow mt-0.5 tracking-wide font-medium">
                     {org.yearOrDesignation}
                   </p>
                 )}
 
                 {org.department && (
-                  <p className="font-mono text-[11px] text-offwhite/60 mt-1 leading-snug">
+                  <p className="font-mono text-[11px] text-offwhite/70 mt-1 leading-snug">
                     {org.department}
                   </p>
                 )}
@@ -241,7 +218,7 @@ export default function Organizers() {
               <div className="mt-5 pt-3 border-t border-line/60 flex flex-col gap-2 font-mono text-xs">
                 {org.phone && (
                   <a
-                    href={`tel:${org.phone}`}
+                    href={`tel:${org.phone.replace(/\s+/g, '')}`}
                     className="flex items-center gap-2 text-offwhite/80 hover:text-yellow transition-colors truncate"
                     title={`Call ${org.name}`}
                   >

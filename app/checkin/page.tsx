@@ -387,7 +387,7 @@ function CheckinDeskContent() {
                           )}
                         </div>
                         <span className="text-[10px] text-neutral-400 block mt-0.5">
-                          {m.college} • {m.department} (Year {m.year})
+                          {m.college} • {m.department} (Year {m.year}) {m.registerNumber ? `• Reg: ${m.registerNumber}` : ''}
                         </span>
                         {m.phone && (
                           <span className="text-[10px] text-neutral-500 block">

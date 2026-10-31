@@ -257,7 +257,7 @@ export default function OrganizerTeamsPage() {
                             </div>
                             <div className="text-slate-400 flex items-center gap-1.5">
                               <GraduationCap className="w-3.5 h-3.5 text-slate-500" />
-                              <span>Year: {m.year}</span>
+                              <span>Year: {m.year} {(m as any).registerNumber ? `• Reg: ${(m as any).registerNumber}` : ''}</span>
                             </div>
                             <div className="text-slate-400 flex items-center gap-1.5 font-mono">
                               <Phone className="w-3.5 h-3.5 text-cyan-500/60" />

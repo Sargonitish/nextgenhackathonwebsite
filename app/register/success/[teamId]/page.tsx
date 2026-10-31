@@ -214,7 +214,7 @@ function RegisterSuccessContent() {
                     {m.name} {m.isLeader && <span className="text-primary font-normal">(Leader)</span>}
                   </span>
                   <span className="text-[11px] text-neutral-500">
-                    {m.college} • {m.department}
+                    {m.college} • {m.department} {m.registerNumber && `• Reg: ${m.registerNumber}`}
                   </span>
                 </div>
                 <span className="text-neutral-400 text-[11px]">Year {m.year}</span>

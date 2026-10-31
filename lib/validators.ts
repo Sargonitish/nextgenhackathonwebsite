@@ -106,6 +106,7 @@ export const teamMemberSchema = z.object({
   college: z.string().min(2, 'College name is required'),
   department: z.string().min(2, 'Department is required'),
   year: z.union([z.string(), z.number()]).refine((val) => !!val, 'Year is required'),
+  registerNumber: z.string().min(1, 'College Register / Roll Number is required').max(40, 'Register number is too long'),
 });
 
 export const teamRegistrationSchema = z
