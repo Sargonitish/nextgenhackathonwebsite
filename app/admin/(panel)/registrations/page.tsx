@@ -195,7 +195,19 @@ export default function RegistrationsPage() {
                     <td className="p-3.5 font-bold text-primary">{t.teamId}</td>
                     <td className="p-3.5 font-medium text-white">{t.teamName}</td>
                     <td className="p-3.5 text-neutral-300">{t.track}</td>
-                    <td className="p-3.5 text-neutral-400">{t.leaderEmail}</td>
+                    <td className="p-3.5 text-neutral-400">
+                      <div className="flex items-center gap-1.5">
+                        <span>{t.leaderEmail}</span>
+                        {t.isGoogleVerified && (
+                          <span
+                            className="px-1.5 py-0.5 rounded text-[9px] bg-blue-500/20 text-blue-400 border border-blue-500/30 font-mono flex items-center gap-1"
+                            title="Verified via Google OAuth"
+                          >
+                            <span>✓</span> Google
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="p-3.5 text-neutral-300">
                       <span className="flex items-center gap-1">
                         <Users className="w-3.5 h-3.5 text-neutral-500" />

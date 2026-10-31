@@ -74,8 +74,8 @@ body.custom-cursor-active textarea {
 
 .char-fade {
   display: inline-block;
-  opacity: 0;
-  animation: charFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 1;
+  animation: charFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Hard offset shadow utility */

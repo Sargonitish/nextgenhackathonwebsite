@@ -26,6 +26,9 @@ export interface ITeam extends Document {
   track: string;
   members: ITeamMember[];
   leaderEmail: string;
+  leaderGoogleId?: string;
+  isGoogleVerified?: boolean;
+  googleAvatar?: string;
   checkinToken: string;
   checkedIn: boolean;
   checkedInAt: Date | null;
@@ -63,6 +66,9 @@ const TeamSchema = new Schema<ITeam>(
     track: { type: String, required: true },
     members: { type: [MemberSchema], required: true },
     leaderEmail: { type: String, required: true, lowercase: true, trim: true },
+    leaderGoogleId: { type: String, default: null, trim: true },
+    isGoogleVerified: { type: Boolean, default: false },
+    googleAvatar: { type: String, default: null },
     checkinToken: { type: String, required: true },
     checkedIn: { type: Boolean, default: false },
     checkedInAt: { type: Date, default: null },

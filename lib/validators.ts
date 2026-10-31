@@ -120,6 +120,9 @@ export const teamRegistrationSchema = z
       errorMap: () => ({ message: 'You must agree to the hackathon rules and code of conduct' }),
     }),
     honeypot: z.string().max(0, 'Spam detected').optional(),
+    leaderGoogleId: z.string().optional(),
+    isGoogleVerified: z.boolean().optional(),
+    googleAvatar: z.string().optional(),
   })
   .refine(
     (data) => {

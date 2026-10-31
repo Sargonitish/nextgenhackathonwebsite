@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { teamName, track, members } = validation.data;
+    const { teamName, track, members, leaderGoogleId, isGoogleVerified, googleAvatar } = validation.data;
 
     await connectDB();
     const event = await Event.findOne({ isActive: true, isArchived: false });
@@ -145,6 +145,9 @@ export async function POST(request: NextRequest) {
       track: track.trim(),
       members: formattedMembers,
       leaderEmail,
+      leaderGoogleId: leaderGoogleId || undefined,
+      isGoogleVerified: Boolean(isGoogleVerified),
+      googleAvatar: googleAvatar || undefined,
       checkinToken,
       checkedIn: false,
       checkedInAt: null,

@@ -20,14 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { leaderEmail, phone } = body;
-
-    if (!leaderEmail || !phone) {
-      return NextResponse.json(
-        { error: 'Leader email and phone number are required' },
-        { status: 400 }
-      );
-    }
+    const { leaderEmail, phone, googleToken } = body;
 
     await connectDB();
     const activeEvent = await Event.findOne({ isActive: true, isArchived: false }).lean();
@@ -35,20 +28,59 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No active event found' }, { status: 404 });
     }
 
-    const cleanEmail = leaderEmail.toLowerCase().trim();
-    const cleanPhone = phone.trim();
+    let team = null;
 
-    const team = await Team.findOne({
-      eventId: activeEvent._id,
-      leaderEmail: cleanEmail,
-      'members.phone': cleanPhone,
-    }).lean();
-
-    if (!team) {
-      return NextResponse.json(
-        { error: 'No matching team found with that leader email and phone number.' },
-        { status: 404 }
+    // 1. Google Verified 1-Click Lookup
+    if (googleToken) {
+      const verifyRes = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(googleToken)}`
       );
+      if (!verifyRes.ok) {
+        return NextResponse.json({ error: 'Invalid Google authentication token' }, { status: 401 });
+      }
+      const tokenData = await verifyRes.json();
+      const verifiedEmail = (tokenData.email || '').toLowerCase().trim();
+      const googleId = tokenData.sub;
+
+      team = await Team.findOne({
+        eventId: activeEvent._id,
+        $or: [
+          { leaderEmail: verifiedEmail },
+          { leaderGoogleId: googleId },
+          { 'members.email': verifiedEmail },
+        ],
+      }).lean();
+
+      if (!team) {
+        return NextResponse.json(
+          { error: `No registration pass found associated with Google account ${verifiedEmail}.` },
+          { status: 404 }
+        );
+      }
+    } else {
+      // 2. Standard Email + Phone Lookup
+      if (!leaderEmail || !phone) {
+        return NextResponse.json(
+          { error: 'Leader email and phone number are required' },
+          { status: 400 }
+        );
+      }
+
+      const cleanEmail = leaderEmail.toLowerCase().trim();
+      const cleanPhone = phone.trim();
+
+      team = await Team.findOne({
+        eventId: activeEvent._id,
+        leaderEmail: cleanEmail,
+        'members.phone': cleanPhone,
+      }).lean();
+
+      if (!team) {
+        return NextResponse.json(
+          { error: 'No matching team found with that leader email and phone number.' },
+          { status: 404 }
+        );
+      }
     }
 
     return NextResponse.json({
