@@ -177,7 +177,7 @@ export default function Coordinators({
                         src={member.photoUrl}
                         alt={member.name}
                         fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="object-cover filter grayscale contrast-125 group-hover:grayscale-0 group-hover:contrast-100 group-hover:scale-105 transition-all duration-300 ease-in-out"
                         unoptimized
                       />
                     ) : (
