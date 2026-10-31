@@ -52,6 +52,7 @@ export default function Navbar({
     { label: 'Rules', href: '#rules', show: sections.rules !== false },
     { label: 'Team', href: '#coordinators', show: sections.coordinators !== false },
     { label: 'Sponsors', href: '#sponsors', show: sections.sponsors !== false },
+    { label: 'Gallery', href: '#gallery', show: sections.gallery !== false },
     { label: 'FAQs', href: '#faqs', show: sections.faq !== false },
     { label: 'Venue', href: '#venue', show: sections.venue !== false },
   ];

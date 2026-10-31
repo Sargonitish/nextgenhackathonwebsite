@@ -12,6 +12,7 @@ import Prizes from '@/components/public/Prizes';
 import Rules from '@/components/public/Rules';
 import Coordinators from '@/components/public/Coordinators';
 import Sponsors from '@/components/public/Sponsors';
+import Gallery from '@/components/public/Gallery';
 import Faq from '@/components/public/Faq';
 import Venue from '@/components/public/Venue';
 import Footer from '@/components/public/Footer';
@@ -137,10 +138,13 @@ export default async function HomePage() {
           />
         )}
 
-        {/* 13. FAQs Accordion with + / − Toggles */}
+        {/* 13. Photo Gallery & Archival Moments */}
+        {sections.gallery !== false && <Gallery gallery={plainEvent.gallery || []} />}
+
+        {/* 14. FAQs Accordion with + / − Toggles */}
         {sections.faq !== false && <Faq faqs={plainEvent.faqs || []} />}
 
-        {/* 14. Venue with Technical Crosshair Coordinates Pin & Dynamic Map Link */}
+        {/* 15. Venue with Technical Crosshair Coordinates Pin & Dynamic Map Link */}
         {sections.venue !== false && (
           <Venue
             name={plainEvent.content?.venueName}
@@ -150,7 +154,7 @@ export default async function HomePage() {
         )}
       </main>
 
-      {/* 15. Footer with Dynamic Name, All Socials & 5-Click Easter Egg */}
+      {/* 16. Footer with Dynamic Name, All Socials & 5-Click Easter Egg */}
       {sections.contact !== false && (
         <Footer
           eventName={displayTitle}
