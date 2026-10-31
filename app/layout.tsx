@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { getActiveEvent } from '@/lib/activeEvent';
 import { Toaster } from 'sonner';
+import { StudentAuthProvider } from '@/context/StudentAuthContext';
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -41,7 +42,9 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-navy text-offwhite antialiased selection:bg-yellow selection:text-navy">
-        {children}
+        <StudentAuthProvider>
+          {children}
+        </StudentAuthProvider>
         <Toaster position="top-right" richColors theme="dark" />
       </body>
     </html>

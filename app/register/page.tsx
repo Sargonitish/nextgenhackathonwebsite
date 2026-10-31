@@ -12,14 +12,17 @@ import {
   ShieldCheck,
   ArrowRight,
   RefreshCw,
-  AlertCircle,
   Sparkles,
   ArrowLeft,
   CheckCircle2,
+  QrCode,
+  LogOut,
+  Lock,
 } from 'lucide-react';
 import { teamRegistrationSchema } from '@/lib/validators';
 import { toast } from 'sonner';
 import GoogleSignInButton, { GoogleVerifiedUser } from '@/components/public/GoogleSignInButton';
+import { useStudentAuth } from '@/context/StudentAuthContext';
 
 interface EventConfig {
   name: string;
@@ -39,7 +42,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [closedReason, setClosedReason] = useState<string | null>(null);
-  const [googleUser, setGoogleUser] = useState<GoogleVerifiedUser | null>(null);
+  const [manualMode, setManualMode] = useState(false);
+
+  const { user, ticket, login, logout, refreshTicket } = useStudentAuth();
 
   const {
     register,
@@ -69,6 +74,21 @@ export default function RegisterPage() {
     control,
     name: 'members',
   });
+
+  // Sync logged-in Google user into Leader form fields
+  useEffect(() => {
+    if (user) {
+      if (user.name) {
+        setValue('members.0.name', user.name, { shouldValidate: true });
+      }
+      if (user.email) {
+        setValue('members.0.email', user.email, { shouldValidate: true });
+      }
+      setValue('leaderGoogleId', user.googleId);
+      setValue('isGoogleVerified', true);
+      setValue('googleAvatar', user.avatar || '');
+    }
+  }, [user, setValue]);
 
   useEffect(() => {
     async function loadConfig() {
@@ -100,26 +120,23 @@ export default function RegisterPage() {
     loadConfig();
   }, []);
 
-  const handleGoogleSuccess = (user: GoogleVerifiedUser) => {
-    setGoogleUser(user);
-    if (user.name) {
-      setValue('members.0.name', user.name, { shouldValidate: true });
+  const handleGatewayGoogleSuccess = async (googleUser: GoogleVerifiedUser) => {
+    const existingTicket = await login(googleUser);
+    toast.success(`Welcome, ${googleUser.name}!`);
+    if (existingTicket) {
+      toast.info(`Active pass located for team: ${existingTicket.teamName || existingTicket.teamId}`);
     }
-    if (user.email) {
-      setValue('members.0.email', user.email, { shouldValidate: true });
-    }
-    setValue('leaderGoogleId', user.googleId);
-    setValue('isGoogleVerified', true);
-    setValue('googleAvatar', user.avatar || '');
-    toast.success(`Google verified: ${user.email}`);
   };
 
-  const handleClearGoogle = () => {
-    setGoogleUser(null);
+  const handleLogout = () => {
+    logout();
+    setValue('members.0.email', '');
+    setValue('members.0.name', '');
     setValue('leaderGoogleId', '');
     setValue('isGoogleVerified', false);
     setValue('googleAvatar', '');
-    setValue('members.0.email', '');
+    setManualMode(false);
+    toast.success('Logged out');
   };
 
   const onSubmit = async (values: any) => {
@@ -127,9 +144,9 @@ export default function RegisterPage() {
     try {
       const payload = {
         ...values,
-        leaderGoogleId: googleUser?.googleId || undefined,
-        isGoogleVerified: Boolean(googleUser),
-        googleAvatar: googleUser?.avatar || undefined,
+        leaderGoogleId: user?.googleId || undefined,
+        isGoogleVerified: Boolean(user),
+        googleAvatar: user?.avatar || undefined,
       };
 
       const res = await fetch('/api/public/register', {
@@ -145,7 +162,10 @@ export default function RegisterPage() {
         return;
       }
 
-      toast.success('Registration successful! Generating QR code...');
+      // Update student ticket state in context and storage
+      await refreshTicket();
+
+      toast.success('Registration successful! Generating QR pass...');
       router.push(`/register/success/${data.teamId}?token=${data.token}`);
     } catch {
       toast.error('Network error during registration');
@@ -193,22 +213,169 @@ export default function RegisterPage() {
   const minSize = config?.settings?.minTeamSize ?? 2;
   const maxSize = config?.settings?.maxTeamSize ?? 4;
 
+  /* ========================================================================= */
+  /* STEP 01: GOOGLE AUTHENTICATION GATEWAY (Shown if user is not yet logged in */
+  /* and has not chosen manual fallback)                                       */
+  /* ========================================================================= */
+  if (!user && !manualMode) {
+    return (
+      <div className="min-h-screen bg-navy text-offwhite py-12 px-4 sm:px-6 lg:px-8 font-mono text-xs flex items-center justify-center">
+        <div className="max-w-xl w-full border border-line bg-[#0c223f] p-6 sm:p-10 shadow-hard space-y-6">
+          <div className="flex items-center justify-between border-b border-line pb-4">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-offwhite/60 hover:text-yellow transition-colors uppercase tracking-wider text-[11px]"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>← RETURN TO EVENT</span>
+            </Link>
+            <div className="text-[11px] text-yellow font-bold uppercase tracking-widest">
+              [ STEP 01 / AUTH GATE ]
+            </div>
+          </div>
+
+          <div>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 border border-yellow/40 bg-yellow/10 text-yellow uppercase tracking-widest text-[10px] mb-3">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>OFFICIAL REGISTRATION ENTRANCE</span>
+            </div>
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-offwhite uppercase tracking-tight">
+              CONTINUE WITH GOOGLE
+            </h1>
+            <p className="text-offwhite/70 mt-2 text-xs leading-relaxed">
+              Sign in with your Google account to auto-fill your Team Leader details, protect your team from duplication, and link your permanent check-in ticket pass.
+            </p>
+          </div>
+
+          {/* Google Sign In Component */}
+          <div className="p-5 border border-line bg-navy/90 space-y-3">
+            <div className="text-[11px] text-yellow font-bold uppercase tracking-wider flex items-center justify-between mb-2">
+              <span>&gt;_ GOOGLE IDENTITY SERVICES</span>
+              <span className="text-offwhite/40">[SECURE POPUP]</span>
+            </div>
+            <GoogleSignInButton onSuccess={handleGatewayGoogleSuccess} />
+          </div>
+
+          {/* Telemetry Benefit Specs */}
+          <div className="space-y-2 border-t border-line pt-4 text-[11px] text-offwhite/60">
+            <div className="flex items-center gap-2">
+              <span className="text-yellow">✓</span>
+              <span>1-Click Team Leader Name &amp; Email autofill</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-yellow">✓</span>
+              <span>Persistent ticket retrieval across browser reloads &amp; devices</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-yellow">✓</span>
+              <span>Verified attendance badge for hackathon certificate</span>
+            </div>
+          </div>
+
+          {/* Fallback Manual Option */}
+          <div className="pt-4 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
+            <button
+              type="button"
+              onClick={() => setManualMode(true)}
+              className="text-offwhite/50 hover:text-yellow underline uppercase transition-colors"
+            >
+              [ Continue with manual registration instead → ]
+            </button>
+            <Link
+              href="/find-registration"
+              className="text-offwhite/50 hover:text-offwhite transition-colors"
+            >
+              Lookup existing ticket
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ========================================================================= */
+  /* STEP 02: MAIN REGISTRATION FORM                                           */
+  /* (Displays top-right ticket pass button when pass exists)                  */
+  /* ========================================================================= */
   return (
     <div className="min-h-screen bg-navy text-offwhite py-12 px-4 sm:px-6 lg:px-8 font-mono text-xs">
-      <div className="max-w-3xl mx-auto space-y-8">
-        {/* Navigation */}
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Navigation Bar */}
         <div className="flex items-center justify-between border-b border-line pb-4">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-offwhite/60 hover:text-yellow transition-colors uppercase tracking-wider text-[11px]"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>← RETURN TO EVENT</span>
+            <span>← RETURN TO HOMEPAGE</span>
           </Link>
-          <div className="text-[11px] text-offwhite/40 tracking-widest hidden sm:block">
-            [ PORTAL: TEAM-REG-V2.6 ]
+
+          {/* Top Right User Profile + Ticket Status */}
+          <div className="flex items-center gap-3">
+            {user ? (
+              <div className="flex items-center gap-2 border border-line bg-[#0c223f] px-3 py-1.5 shadow-hard-sm">
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt=""
+                    className="w-4 h-4 rounded-full border border-yellow"
+                  />
+                ) : (
+                  <span className="text-yellow font-bold">G</span>
+                )}
+                <span className="text-yellow font-bold text-[11px] truncate max-w-[140px]">
+                  {user.name.split(' ')[0] || user.email}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-offwhite/40 hover:text-red-400 ml-1"
+                  title="Logout"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <span className="text-[11px] text-offwhite/40 tracking-widest hidden sm:inline">
+                [ MANUAL MODE ]
+              </span>
+            )}
+
+            {/* In the Right Corner: VIEW TICKET PASS BUTTON */}
+            {ticket && (
+              <Link
+                href={`/register/success/${ticket.teamId}?token=${ticket.token}`}
+                className="px-3.5 py-1.5 bg-yellow text-navy font-bold uppercase tracking-wider text-xs border border-yellow shadow-hard hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-1.5 animate-pulse"
+              >
+                <QrCode className="w-3.5 h-3.5" />
+                <span>VIEW TICKET ({ticket.teamId})</span>
+              </Link>
+            )}
           </div>
         </div>
+
+        {/* Existing Ticket Alert Banner */}
+        {ticket && (
+          <div className="p-4 border border-yellow bg-yellow/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-offwhite">
+            <div className="flex items-center gap-2.5">
+              <QrCode className="w-5 h-5 text-yellow shrink-0" />
+              <div>
+                <div className="text-yellow font-bold text-xs uppercase">
+                  ACTIVE REGISTRATION PASS FOUND FOR YOUR ACCOUNT
+                </div>
+                <div className="text-offwhite/70 text-[11px]">
+                  Team: <strong className="text-offwhite">{ticket.teamName || ticket.teamId}</strong> (Pass ID: {ticket.teamId}). You can view your pass or register a new team below.
+                </div>
+              </div>
+            </div>
+            <Link
+              href={`/register/success/${ticket.teamId}?token=${ticket.token}`}
+              className="px-4 py-2 bg-yellow text-navy font-bold uppercase text-xs tracking-wider shrink-0"
+            >
+              View Ticket Pass →
+            </Link>
+          </div>
+        )}
 
         {/* Header */}
         <div>
@@ -220,7 +387,7 @@ export default function RegisterPage() {
             REGISTER FOR {config?.name || 'HACKX 2026'}
           </h1>
           <p className="text-offwhite/60 mt-2 text-xs leading-relaxed">
-            Teams must consist of {minSize} to {maxSize} members. Member 1 is designated as the primary Team Leader for check-in and communications.
+            Teams must consist of {minSize} to {maxSize} members. Member 1 is designated as the primary Team Leader for communications and check-in.
           </p>
         </div>
 
@@ -348,52 +515,29 @@ export default function RegisterPage() {
                     )}
                   </div>
 
-                  {/* Leader 1-Click Google Verification Hook */}
-                  {isLeader && (
-                    <div className="mb-5 p-3.5 border border-line bg-navy/90">
-                      {!googleUser ? (
-                        <div>
-                          <div className="flex items-center justify-between font-mono text-[11px] mb-2 text-offwhite/70">
-                            <span className="text-yellow font-bold uppercase">
-                              &gt;_ ONE-CLICK GOOGLE AUTOFILL
-                            </span>
-                            <span className="text-offwhite/40 hidden sm:inline">
-                              VERIFIED TEAM LEADER IDENTITY
-                            </span>
-                          </div>
-                          <GoogleSignInButton
-                            label="CONTINUE WITH GOOGLE // AUTOFILL LEADER INFO"
-                            onSuccess={handleGoogleSuccess}
+                  {/* Leader Google Status */}
+                  {isLeader && user && (
+                    <div className="mb-4 p-3 border border-yellow/60 bg-navy flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        {user.avatar ? (
+                          <img
+                            src={user.avatar}
+                            alt=""
+                            className="w-7 h-7 rounded-full border border-yellow"
                           />
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3">
-                            {googleUser.avatar ? (
-                              <img
-                                src={googleUser.avatar}
-                                alt="Google Avatar"
-                                className="w-8 h-8 rounded-full border border-yellow"
-                              />
-                            ) : (
-                              <CheckCircle2 className="w-6 h-6 text-yellow shrink-0" />
-                            )}
-                            <div>
-                              <div className="text-yellow font-bold flex items-center gap-1.5 uppercase text-[11px]">
-                                <span>[ ✓ VERIFIED VIA GOOGLE ]</span>
-                              </div>
-                              <div className="text-offwhite text-xs">{googleUser.email}</div>
-                            </div>
+                        ) : (
+                          <CheckCircle2 className="w-5 h-5 text-yellow shrink-0" />
+                        )}
+                        <div>
+                          <div className="text-yellow font-bold uppercase text-[11px] flex items-center gap-1">
+                            <span>✓ GOOGLE VERIFIED LEADER</span>
                           </div>
-                          <button
-                            type="button"
-                            onClick={handleClearGoogle}
-                            className="text-[11px] text-offwhite/40 hover:text-red-400 underline uppercase transition-colors"
-                          >
-                            [ Disconnect ]
-                          </button>
+                          <div className="text-offwhite/80 text-xs">{user.email}</div>
                         </div>
-                      )}
+                      </div>
+                      <div className="text-[10px] text-offwhite/40 uppercase">
+                        [ LOCKED &amp; VERIFIED ]
+                      </div>
                     </div>
                   )}
 
@@ -418,17 +562,17 @@ export default function RegisterPage() {
                     <div>
                       <label className="block text-offwhite/60 text-[10px] uppercase mb-1">
                         Email Address *
-                        {isLeader && googleUser && (
+                        {isLeader && user && (
                           <span className="text-yellow ml-1 font-bold">[VERIFIED]</span>
                         )}
                       </label>
                       <input
                         type="email"
-                        readOnly={isLeader && Boolean(googleUser)}
+                        readOnly={isLeader && Boolean(user)}
                         {...register(`members.${index}.email` as const)}
                         placeholder="john@college.edu"
                         className={`w-full px-3 py-2 bg-navy border text-offwhite focus:outline-none focus:border-yellow text-xs font-mono ${
-                          isLeader && googleUser
+                          isLeader && user
                             ? 'border-yellow/70 bg-navy/60 cursor-not-allowed text-yellow'
                             : 'border-line'
                         }`}
