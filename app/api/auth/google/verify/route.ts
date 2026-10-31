@@ -5,15 +5,15 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { credential } = body;
+    const token = body.credential || body.idToken;
 
-    if (!credential) {
+    if (!token) {
       return NextResponse.json({ error: 'Missing Google credential token' }, { status: 400 });
     }
 
     // Verify token using official Google OAuth2 tokeninfo endpoint
     const response = await fetch(
-      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(token)}`
     );
 
     if (!response.ok) {

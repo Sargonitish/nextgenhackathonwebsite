@@ -20,19 +20,19 @@ interface GoogleSignInButtonProps {
 declare global {
   interface Window {
     google?: any;
-    handleGoogleSignInCallback?: (response: any) => void;
   }
 }
 
 export default function GoogleSignInButton({
   onSuccess,
   onError,
-  label = 'AUTOFILL WITH GOOGLE // VERIFIED ID',
+  label = 'CONTINUE WITH GOOGLE // ONE-CLICK AUTOFILL',
   className = '',
 }: GoogleSignInButtonProps) {
   const [loading, setLoading] = useState(false);
   const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [gsiReady, setGsiReady] = useState(false);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
 
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -44,7 +44,6 @@ export default function GoogleSignInButton({
       return;
     }
 
-    // Load Google Identity Services script if not already present
     const scriptId = 'google-gsi-script';
     let script = document.getElementById(scriptId) as HTMLScriptElement;
 
@@ -55,7 +54,8 @@ export default function GoogleSignInButton({
         window.google.accounts.id.initialize({
           client_id: clientId,
           callback: async (response: any) => {
-            if (!response.credential) {
+            const token = response?.credential;
+            if (!token) {
               const err = 'No credentials received from Google';
               setErrorMessage(err);
               onError?.(err);
@@ -68,7 +68,10 @@ export default function GoogleSignInButton({
               const res = await fetch('/api/auth/google/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ idToken: response.credential }),
+                body: JSON.stringify({
+                  credential: token,
+                  idToken: token,
+                }),
               });
 
               const data = await res.json();
@@ -81,7 +84,7 @@ export default function GoogleSignInButton({
                 email: data.user.email,
                 name: data.user.name,
                 avatar: data.user.avatar,
-                token: response.credential,
+                token: token,
               });
             } catch (err: any) {
               const msg = err.message || 'Google verification failed';
@@ -95,15 +98,18 @@ export default function GoogleSignInButton({
           cancel_on_tap_outside: true,
         });
 
-        // Render native hidden/overlay prompt trigger if container is ready
         if (buttonContainerRef.current) {
           buttonContainerRef.current.innerHTML = '';
           window.google.accounts.id.renderButton(buttonContainerRef.current, {
             theme: 'filled_black',
             size: 'large',
+            type: 'standard',
             shape: 'rectangular',
-            width: 280,
+            text: 'continue_with',
+            logo_alignment: 'left',
+            width: 320,
           });
+          setGsiReady(true);
         }
       } catch (err) {
         console.error('Google GSI initialization error:', err);
@@ -123,70 +129,23 @@ export default function GoogleSignInButton({
     }
   }, [clientId, onSuccess, onError]);
 
-  const handleManualClick = () => {
-    if (!clientId) {
-      setErrorMessage(
-        'Google Client ID is not configured. Add NEXT_PUBLIC_GOOGLE_CLIENT_ID to .env.local to enable real Google authentication.'
-      );
-      return;
-    }
-
-    if (window.google?.accounts?.id) {
-      // Trigger Google One-Tap or Prompt
-      window.google.accounts.id.prompt((notification: any) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          // Fallback: If One Tap is suppressed by browser, trigger standard flow
-          const gsiButton = buttonContainerRef.current?.querySelector('div[role="button"]') as HTMLElement;
-          if (gsiButton) {
-            gsiButton.click();
-          }
-        }
-      });
-    }
-  };
-
   return (
-    <div className={`space-y-2 ${className}`}>
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        {/* Custom Blueprint Button */}
-        <button
-          type="button"
-          onClick={handleManualClick}
-          disabled={loading}
-          className="flex-1 px-4 py-3 border border-line bg-[#0c223f] hover:border-yellow hover:bg-[#102a4e] text-offwhite transition-all duration-150 flex items-center justify-center gap-3 font-mono text-xs uppercase tracking-wider group cursor-pointer shadow-hard-sm"
-        >
-          {/* Google G Logo SVG */}
-          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-            <path
-              fill="#4285F4"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-            />
-            <path
-              fill="#EA4335"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-            />
-          </svg>
+    <div className={`space-y-2.5 ${className}`}>
+      {/* Google GSI Official Button Container */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <div
+          ref={buttonContainerRef}
+          className="min-h-[44px] flex items-center justify-start overflow-hidden border border-line p-1 bg-[#0c223f] shadow-hard-sm"
+        />
 
-          {loading ? (
-            <span className="text-yellow animate-pulse">VERIFYING WITH GOOGLE SECURE AUTH...</span>
-          ) : (
-            <span className="group-hover:text-yellow transition-colors font-bold">{label}</span>
-          )}
-        </button>
-
-        {/* Hidden Container for GSI native rendering fallback */}
-        <div ref={buttonContainerRef} className="hidden" aria-hidden="true" />
+        {loading && (
+          <span className="font-mono text-xs text-yellow animate-pulse">
+            [VERIFYING CREDENTIALS...]
+          </span>
+        )}
       </div>
 
-      {/* Notice if Google Client ID is not configured yet */}
+      {/* Notice if Google Client ID is missing */}
       {isConfigured === false && (
         <div className="p-3 border border-yellow/30 bg-yellow/5 font-mono text-[11px] text-offwhite/80 flex items-start gap-2">
           <span className="text-yellow font-bold">[INFO]</span>
