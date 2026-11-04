@@ -102,7 +102,7 @@ export default function OrganizerTeamsPage() {
         </div>
 
         <Link
-          href="/checkin"
+          href="/checkin?from=/organizer/teams"
           className="self-start sm:self-center px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition"
         >
           <QrCode className="w-4 h-4" /> Open Desk Scanner
@@ -270,7 +270,7 @@ export default function OrganizerTeamsPage() {
 
                     <div className="pt-2 flex justify-end">
                       <Link
-                        href={`/checkin?manual=${t.teamId}`}
+                        href={`/checkin?manual=${t.teamId}&from=/organizer/teams`}
                         className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-mono font-bold flex items-center gap-1.5 transition"
                       >
                         <QrCode className="w-3.5 h-3.5" />

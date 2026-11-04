@@ -84,7 +84,7 @@ export default function OrganizerPortalLayout({
     },
     {
       label: 'Desk Scanner',
-      href: '/checkin',
+      href: '/checkin?from=/organizer',
       icon: QrCode,
       active: pathname === '/checkin',
       highlight: true,

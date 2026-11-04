@@ -94,7 +94,7 @@ export default function OrganizerDashboardPage() {
       {/* Main Action Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Link
-          href="/checkin"
+          href="/checkin?from=/organizer"
           className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-emerald-600/10 to-transparent border border-emerald-500/40 p-6 hover:border-emerald-400 transition-all duration-300 shadow-lg shadow-emerald-950/20 flex items-center justify-between"
         >
           <div className="space-y-2">

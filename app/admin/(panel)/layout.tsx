@@ -127,7 +127,7 @@ function AdminPanelContent({
       icon: UserPlus,
       badge: pendingCount > 0 ? pendingCount : null,
     },
-    { label: 'QR Check-in Desk', href: '/checkin', icon: QrCode },
+    { label: 'QR Check-in Desk', href: '/checkin?from=/admin', icon: QrCode },
     { label: 'Event Settings', href: '/admin/settings', icon: Sliders },
     { label: 'Security & 2FA', href: '/admin/security', icon: ShieldAlert },
   ];

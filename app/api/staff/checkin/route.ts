@@ -9,6 +9,50 @@ import { toOrganizerTeamView } from '@/lib/permissions';
 
 export const dynamic = 'force-dynamic';
 
+export async function GET() {
+  try {
+    const user = await requireRole('staff');
+    await connectDB();
+
+    const activeEvent = await Event.findOne({ isActive: true, isArchived: false }).lean();
+    let totalTeams = 0;
+    let checkedInTeams = 0;
+
+    if (activeEvent) {
+      [totalTeams, checkedInTeams] = await Promise.all([
+        Team.countDocuments({ eventId: activeEvent._id }),
+        Team.countDocuments({ eventId: activeEvent._id, checkedIn: true }),
+      ]);
+    }
+
+    return NextResponse.json({
+      authenticated: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+      },
+      dashboardUrl: user.role === 'admin' ? '/admin' : '/organizer',
+      stats: {
+        checkedIn: checkedInTeams,
+        total: totalTeams,
+      },
+    });
+  } catch (error: any) {
+    if (error?.message === 'UNAUTHORIZED' || error?.message === 'FORBIDDEN') {
+      return NextResponse.json(
+        { authenticated: false, error: 'Unauthorized access', dashboardUrl: '/' },
+        { status: 401 }
+      );
+    }
+    console.error('Checkin API GET error:', error);
+    return NextResponse.json(
+      { authenticated: false, error: 'Server error', dashboardUrl: '/' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const user = await requireRole('staff');

@@ -23,11 +23,16 @@ function CheckinDeskContent() {
   const searchParams = useSearchParams();
   const teamParam = searchParams.get('team');
   const tokenParam = searchParams.get('token');
+  const fromParam = searchParams.get('from');
 
   const [activeTab, setActiveTab] = useState<'camera' | 'manual'>('camera');
   const [manualQuery, setManualQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
+
+  // Staff Session & Dynamic Exit Destination
+  const [staffInfo, setStaffInfo] = useState<{ role?: string; name?: string } | null>(null);
+  const [exitHref, setExitHref] = useState<string>('/organizer');
 
   // Desk Stats Counter
   const [deskStats, setDeskStats] = useState({ checkedIn: 0, total: 0 });
@@ -40,27 +45,58 @@ function CheckinDeskContent() {
   const [presentMemberIds, setPresentMemberIds] = useState<string[]>([]);
   const [lookupError, setLookupError] = useState<string | null>(null);
 
-  const fetchDeskStats = async () => {
+  const fetchDeskContext = async () => {
     try {
-      const res = await fetch('/api/public/stats');
-      if (res.ok) {
-        const data = await res.json();
-        setDeskStats((prev) => ({ ...prev, total: data.registeredTeamsCount || 0 }));
+      // 1. Fetch Staff session context & accurate stats
+      const staffRes = await fetch('/api/staff/checkin');
+      if (staffRes.ok) {
+        const staffData = await staffRes.json();
+        if (staffData.stats) {
+          setDeskStats({
+            checkedIn: staffData.stats.checkedIn || 0,
+            total: staffData.stats.total || 0,
+          });
+        }
+        if (staffData.user) {
+          setStaffInfo(staffData.user);
+        }
+
+        // Determine Exit Desk destination:
+        // Priority 1: Valid 'from' parameter starting with '/'
+        // Priority 2: Dashboard URL from API (/organizer or /admin)
+        if (fromParam && fromParam.startsWith('/')) {
+          setExitHref(fromParam);
+        } else if (staffData.dashboardUrl) {
+          setExitHref(staffData.dashboardUrl);
+        } else {
+          setExitHref(staffData.user?.role === 'admin' ? '/admin' : '/organizer');
+        }
+        return;
       }
-      const adminRes = await fetch('/api/admin/stats');
-      if (adminRes.ok) {
-        const aData = await adminRes.json();
-        setDeskStats({
-          checkedIn: aData.checkedInTeams || 0,
-          total: aData.totalTeams || 0,
-        });
+    } catch (err) {
+      console.error('Failed to load staff context:', err);
+    }
+
+    // Fallback if staff endpoint didn't respond
+    if (fromParam && fromParam.startsWith('/')) {
+      setExitHref(fromParam);
+    } else {
+      setExitHref('/organizer');
+    }
+
+    // Public stats fallback
+    try {
+      const pubRes = await fetch('/api/public/stats');
+      if (pubRes.ok) {
+        const pData = await pubRes.json();
+        setDeskStats((prev) => ({ ...prev, total: pData.registeredTeamsCount || 0 }));
       }
     } catch {}
   };
 
   useEffect(() => {
-    fetchDeskStats();
-  }, []);
+    fetchDeskContext();
+  }, [fromParam]);
 
   // Handle URL query parameters (auto-lookup from camera QR scan)
   useEffect(() => {
@@ -163,7 +199,7 @@ function CheckinDeskContent() {
       }
 
       toast.success(`✓ ${team.teamId} Checked-in successfully!`);
-      fetchDeskStats();
+      fetchDeskContext();
 
       // Return to scanner automatically after 2 seconds
       setTimeout(() => {
@@ -184,8 +220,9 @@ function CheckinDeskContent() {
         {/* Top Header & Live Counter */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
           <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-white"
+            href={exitHref}
+            className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors"
+            title={staffInfo?.role === 'admin' ? 'Exit to Admin Console' : 'Exit to Organizer Dashboard'}
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Exit Desk</span>
