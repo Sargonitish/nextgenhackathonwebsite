@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
 
     // Return safe fields
     return NextResponse.json({
+      eventName: activeEvent.name || 'HACKX 2026',
       team: {
         teamId: team.teamId,
         teamName: team.teamName,
@@ -57,6 +58,7 @@ export async function GET(request: NextRequest) {
           college: m.college,
           department: m.department,
           year: m.year,
+          registerNumber: m.registerNumber || '',
           isLeader: m.isLeader,
         })),
       },
