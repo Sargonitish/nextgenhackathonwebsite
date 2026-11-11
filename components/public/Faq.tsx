@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ScrollTrigger } from '@/lib/gsap';
 
 interface FaqItem {
   _id?: string;
@@ -10,6 +11,13 @@ interface FaqItem {
 
 export default function Faq({ faqs = [] }: { faqs: FaqItem[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    const frameId = requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
+    return () => cancelAnimationFrame(frameId);
+  }, [openIndex]);
 
   const defaultFaqs: FaqItem[] = [
     {

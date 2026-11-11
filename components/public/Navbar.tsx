@@ -27,9 +27,38 @@ export default function Navbar({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
   const navContainerRef = useRef<HTMLElement>(null);
+  const scrollBarRef = useRef<HTMLDivElement>(null);
 
   const { user, ticket, logout } = useStudentAuth();
-  const { contextSafe } = useGSAP({ scope: navContainerRef });
+  const { contextSafe } = useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const progressEl = scrollBarRef.current;
+        if (!progressEl) return;
+        const supportsScrollTimeline =
+          typeof CSS !== 'undefined' &&
+          CSS.supports('animation-timeline: scroll(root block)');
+        if (supportsScrollTimeline) return;
+
+        gsap.fromTo(
+          progressEl,
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: document.documentElement,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: true,
+            },
+          }
+        );
+      });
+    },
+    { scope: navContainerRef }
+  );
 
   const handleAnchorClick = contextSafe(
     (e: ReactMouseEvent<HTMLAnchorElement>, href: string) => {
@@ -336,6 +365,16 @@ export default function Navbar({
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
+        </div>
+        {/* 2px Top Scroll Progress Gauge (native CSS scroll() with GSAP fallback) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] overflow-hidden"
+        >
+          <div
+            ref={scrollBarRef}
+            className="h-full w-full origin-left bg-yellow cad-native-progress scale-x-0"
+          />
         </div>
       </header>
 

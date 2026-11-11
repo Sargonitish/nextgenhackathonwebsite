@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Phone, Mail, Linkedin, GraduationCap, Award } from 'lucide-react';
-import { gsap, useGSAP, Flip, prefersReducedMotion } from '@/lib/gsap';
+import { gsap, useGSAP, Flip, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap';
 
 export interface CoordinatorItem {
   _id?: string;
@@ -105,6 +105,9 @@ export default function Coordinators({
             { opacity: 0, scale: 0.94 },
             { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out', clearProps: 'transform,opacity' }
           ),
+        onComplete: () => {
+          ScrollTrigger.refresh();
+        },
       });
     },
     { dependencies: [filter], scope: gridRef }

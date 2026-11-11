@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Phone, Mail } from 'lucide-react';
-import { gsap, useGSAP, Flip, prefersReducedMotion } from '@/lib/gsap';
+import { gsap, useGSAP, Flip, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap';
 
 export interface OrganizerItem {
   _id?: string;
@@ -110,6 +110,14 @@ export default function Organizers() {
     };
   }, []);
 
+  useEffect(() => {
+    if (loading) return;
+    const frameId = requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
+    return () => cancelAnimationFrame(frameId);
+  }, [loading]);
+
   const displayList = organizers.length > 0 ? organizers : DEFAULT_ORGANIZERS;
 
   // Duty categories available in current list
@@ -147,6 +155,9 @@ export default function Organizers() {
             { opacity: 0, scale: 0.94 },
             { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out', clearProps: 'transform,opacity' }
           ),
+        onComplete: () => {
+          ScrollTrigger.refresh();
+        },
       });
     },
     { dependencies: [activeFilter], scope: gridRef }

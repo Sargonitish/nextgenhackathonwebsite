@@ -46,9 +46,39 @@ export default function Schedule({ schedule = [] }: { schedule: ScheduleItem[] }
             once: true,
           },
         });
+
+        const nodes = gsap.utils.toArray<HTMLElement>('[data-milestone-node]');
+        const segments = gsap.utils.toArray<HTMLElement>('[data-spine-segment]');
+
+        if (nodes.length > 0) {
+          const spineTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: '[data-schedule-list]',
+              start: 'top 72%',
+              end: 'bottom 68%',
+              scrub: 0.4,
+            },
+          });
+
+          nodes.forEach((node, idx) => {
+            spineTl.to(node, {
+              borderColor: '#FFD23F',
+              backgroundColor: '#FFD23F',
+              duration: 0.25,
+              ease: 'none',
+            });
+            if (segments[idx]) {
+              spineTl.to(segments[idx], {
+                scaleY: 1,
+                duration: 1,
+                ease: 'none',
+              });
+            }
+          });
+        }
       });
     },
-    { scope: sectionRef }
+    { scope: sectionRef, dependencies: [displaySchedule.length], revertOnUpdate: true }
   );
 
   return (
@@ -67,7 +97,7 @@ export default function Schedule({ schedule = [] }: { schedule: ScheduleItem[] }
       </div>
 
       <div className="relative pl-0 sm:pl-8">
-        <div className="space-y-9 sm:space-y-11">
+        <div data-schedule-list className="space-y-9 sm:space-y-11">
           {displaySchedule.map((item, idx) => (
             <div
               key={item._id || idx}
@@ -81,13 +111,22 @@ export default function Schedule({ schedule = [] }: { schedule: ScheduleItem[] }
 
               {/* Center Timeline Node Marker */}
               <div className="hidden sm:flex sm:col-span-1 justify-center relative pt-1.5">
-                {/* Vertical connecting line */}
+                {/* Base vertical connecting hairline + scrubbed yellow overlay spine */}
                 {idx < displaySchedule.length - 1 && (
-                  <div className="absolute top-3.5 bottom-[-44px] w-[1px] bg-line" />
+                  <>
+                    <div className="absolute top-3.5 bottom-[-44px] w-[1px] bg-line" />
+                    <div
+                      data-spine-segment
+                      className="absolute top-3.5 bottom-[-44px] w-[2px] bg-yellow origin-top scale-y-0"
+                    />
+                  </>
                 )}
 
                 {/* Square Node Marker */}
-                <div className="w-2 h-2 z-10 transition-colors bg-navy border border-offwhite/70 group-hover:border-yellow group-hover:bg-yellow" />
+                <div
+                  data-milestone-node
+                  className="w-2 h-2 z-10 transition-colors bg-navy border border-offwhite/70 group-hover:border-yellow group-hover:bg-yellow"
+                />
               </div>
 
               {/* Right Column: Title & Description */}
