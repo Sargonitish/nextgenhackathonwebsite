@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Phone, Mail, Linkedin, GraduationCap, Award } from 'lucide-react';
+import { gsap, useGSAP, Flip, prefersReducedMotion } from '@/lib/gsap';
 
 export interface CoordinatorItem {
   _id?: string;
@@ -66,6 +67,8 @@ export default function Coordinators({
   coordinators?: CoordinatorItem[];
 }) {
   const [filter, setFilter] = useState<'all' | 'faculty' | 'student'>('all');
+  const gridRef = useRef<HTMLDivElement>(null);
+  const flipStateRef = useRef<Flip.FlipState | null>(null);
 
   const displayList =
     coordinators && coordinators.length > 0 ? coordinators : DEFAULT_COORDINATORS;
@@ -74,6 +77,38 @@ export default function Coordinators({
     if (filter === 'all') return true;
     return m.type === filter;
   });
+
+  const handleFilterChange = (nextFilter: 'all' | 'faculty' | 'student') => {
+    if (nextFilter === filter) return;
+    if (!prefersReducedMotion() && gridRef.current) {
+      const cards = gridRef.current.querySelectorAll<HTMLElement>('[data-flip-card]');
+      flipStateRef.current = Flip.getState(cards);
+    }
+    setFilter(nextFilter);
+  };
+
+  useGSAP(
+    () => {
+      const state = flipStateRef.current;
+      if (!state) return;
+      flipStateRef.current = null;
+      if (prefersReducedMotion()) return;
+      Flip.from(state, {
+        targets: '[data-flip-card]',
+        duration: 0.4,
+        ease: 'power2.out',
+        scale: true,
+        stagger: 0.03,
+        onEnter: (elements) =>
+          gsap.fromTo(
+            elements,
+            { opacity: 0, scale: 0.94 },
+            { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out', clearProps: 'transform,opacity' }
+          ),
+      });
+    },
+    { dependencies: [filter], scope: gridRef }
+  );
 
   const getInitials = (name: string) => {
     return name
@@ -109,7 +144,7 @@ export default function Coordinators({
         <div className="flex items-center gap-2 font-mono text-xs shrink-0">
           <button
             type="button"
-            onClick={() => setFilter('all')}
+            onClick={() => handleFilterChange('all')}
             className={`px-3 py-1.5 border transition-colors cursor-pointer ${
               filter === 'all'
                 ? 'bg-yellow text-navy font-bold border-yellow shadow-hard-sm'
@@ -120,7 +155,7 @@ export default function Coordinators({
           </button>
           <button
             type="button"
-            onClick={() => setFilter('faculty')}
+            onClick={() => handleFilterChange('faculty')}
             className={`px-3 py-1.5 border transition-colors cursor-pointer ${
               filter === 'faculty'
                 ? 'bg-yellow text-navy font-bold border-yellow shadow-hard-sm'
@@ -131,7 +166,7 @@ export default function Coordinators({
           </button>
           <button
             type="button"
-            onClick={() => setFilter('student')}
+            onClick={() => handleFilterChange('student')}
             className={`px-3 py-1.5 border transition-colors cursor-pointer ${
               filter === 'student'
                 ? 'bg-yellow text-navy font-bold border-yellow shadow-hard-sm'
@@ -144,13 +179,16 @@ export default function Coordinators({
       </div>
 
       {/* Grid of Coordinator Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredTeam.map((member, idx) => {
           const isFaculty = member.type === 'faculty';
+          const flipId = member._id || `${member.name}-${member.role || idx}`;
 
           return (
             <div
-              key={member._id || idx}
+              key={flipId}
+              data-flip-card
+              data-flip-id={flipId}
               className="border border-line bg-[#0c223f] hover:border-yellow shadow-hard-sm transition-colors duration-150 flex flex-col justify-between p-5 relative group"
             >
               <div>

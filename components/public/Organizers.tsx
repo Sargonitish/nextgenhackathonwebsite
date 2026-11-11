@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Phone, Mail } from 'lucide-react';
+import { gsap, useGSAP, Flip, prefersReducedMotion } from '@/lib/gsap';
 
 export interface OrganizerItem {
   _id?: string;
@@ -75,6 +76,8 @@ export default function Organizers() {
   const [organizers, setOrganizers] = useState<OrganizerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const gridRef = useRef<HTMLDivElement>(null);
+  const flipStateRef = useRef<Flip.FlipState | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -117,6 +120,38 @@ export default function Organizers() {
       ? displayList
       : displayList.filter((o) => (o.duty || 'other') === activeFilter);
 
+  const handleFilterChange = (nextFilter: string) => {
+    if (nextFilter === activeFilter) return;
+    if (!prefersReducedMotion() && gridRef.current) {
+      const cards = gridRef.current.querySelectorAll<HTMLElement>('[data-flip-card]');
+      flipStateRef.current = Flip.getState(cards);
+    }
+    setActiveFilter(nextFilter);
+  };
+
+  useGSAP(
+    () => {
+      const state = flipStateRef.current;
+      if (!state) return;
+      flipStateRef.current = null;
+      if (prefersReducedMotion()) return;
+      Flip.from(state, {
+        targets: '[data-flip-card]',
+        duration: 0.4,
+        ease: 'power2.out',
+        scale: true,
+        stagger: 0.03,
+        onEnter: (elements) =>
+          gsap.fromTo(
+            elements,
+            { opacity: 0, scale: 0.94 },
+            { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out', clearProps: 'transform,opacity' }
+          ),
+      });
+    },
+    { dependencies: [activeFilter], scope: gridRef }
+  );
+
   return (
     <section id="organizers" className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -133,7 +168,7 @@ export default function Organizers() {
         <div className="flex flex-wrap gap-2 font-mono text-[11px]">
           <button
             type="button"
-            onClick={() => setActiveFilter('all')}
+            onClick={() => handleFilterChange('all')}
             className={`px-3 py-1.5 border transition-colors uppercase tracking-wider cursor-pointer ${
               activeFilter === 'all'
                 ? 'bg-yellow text-navy border-yellow font-bold shadow-[2px_2px_0_rgba(242,239,230,0.3)]'
@@ -146,7 +181,7 @@ export default function Organizers() {
             <button
               key={dutyKey}
               type="button"
-              onClick={() => setActiveFilter(dutyKey)}
+              onClick={() => handleFilterChange(dutyKey)}
               className={`px-3 py-1.5 border transition-colors uppercase tracking-wider cursor-pointer ${
                 activeFilter === dutyKey
                   ? 'bg-yellow text-navy border-yellow font-bold shadow-[2px_2px_0_rgba(242,239,230,0.3)]'
@@ -160,13 +195,16 @@ export default function Organizers() {
       </div>
 
       {/* Grid of Organizers */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredList.map((org, index) => {
           const dutyLabel = DUTY_LABELS[org.duty || 'other'] || org.duty?.toUpperCase() || 'OPERATIONS';
+          const flipId = org._id || `${org.name}-${org.duty || 'other'}`;
 
           return (
             <div
-              key={org._id || `org-${index}`}
+              key={flipId}
+              data-flip-card
+              data-flip-id={flipId}
               className="border border-line bg-navy/80 p-5 flex flex-col justify-between relative group hover:border-yellow transition-colors shadow-hard"
             >
               {/* Top: Duty Tag */}

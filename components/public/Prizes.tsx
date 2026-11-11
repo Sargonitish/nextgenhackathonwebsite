@@ -1,3 +1,8 @@
+'use client';
+
+import { useRef } from 'react';
+import { gsap, useGSAP } from '@/lib/gsap';
+
 interface PrizeItem {
   _id?: string;
   position: string;
@@ -7,6 +12,8 @@ interface PrizeItem {
 }
 
 export default function Prizes({ prizes = [] }: { prizes: PrizeItem[] }) {
+  const sectionRef = useRef<HTMLElement>(null);
+
   // Extract or fall back to blueprint defaults
   const first: PrizeItem = prizes.find((p) => p.position === '1st') || {
     position: '1st',
@@ -29,8 +36,34 @@ export default function Prizes({ prizes = [] }: { prizes: PrizeItem[] }) {
 
   const specials = prizes.filter((p) => !['1st', '2nd', '3rd'].includes(p.position));
 
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.from('[data-prize-card]', {
+          y: 26,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: 'power2.out',
+          clearProps: 'transform,opacity',
+          scrollTrigger: {
+            trigger: '[data-prizes-grid]',
+            start: 'top 82%',
+            once: true,
+          },
+        });
+      });
+    },
+    { scope: sectionRef }
+  );
+
   return (
-    <section id="prizes" className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
+    <section
+      ref={sectionRef}
+      id="prizes"
+      className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10"
+    >
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
         <h2 className="font-display font-black text-3xl sm:text-4xl text-offwhite tracking-tight">
           Prize Pool &amp; Awards
@@ -41,9 +74,12 @@ export default function Prizes({ prizes = [] }: { prizes: PrizeItem[] }) {
       </div>
 
       {/* Asymmetric Staggered Layout (NOT 3 Identical Cards) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-14">
+      <div data-prizes-grid className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-14">
         {/* 1st Place (Takes 55% Width, Taller & Heroic) */}
-        <div className="lg:col-span-7 border border-line p-8 sm:p-12 bg-white/[0.01] flex flex-col justify-between min-h-[360px] relative">
+        <div
+          data-prize-card
+          className="lg:col-span-7 border border-line p-8 sm:p-12 bg-white/[0.01] flex flex-col justify-between min-h-[360px] relative"
+        >
           <div className="flex items-start justify-between">
             {/* Oversized Numeral */}
             <div className="font-display font-black text-8xl sm:text-[152px] text-yellow leading-none select-none">
@@ -72,7 +108,10 @@ export default function Prizes({ prizes = [] }: { prizes: PrizeItem[] }) {
         {/* 2nd & 3rd Place (Stacked / Offset in remaining 45% width) */}
         <div className="lg:col-span-5 flex flex-col gap-8">
           {/* 2nd Place */}
-          <div className="border border-line p-6 sm:p-8 bg-white/[0.01] flex items-center justify-between gap-6">
+          <div
+            data-prize-card
+            className="border border-line p-6 sm:p-8 bg-white/[0.01] flex items-center justify-between gap-6"
+          >
             <div className="font-display font-black text-6xl sm:text-8xl text-offwhite/65 leading-none select-none shrink-0">
               2
             </div>
@@ -92,7 +131,10 @@ export default function Prizes({ prizes = [] }: { prizes: PrizeItem[] }) {
           </div>
 
           {/* 3rd Place */}
-          <div className="border border-line p-6 sm:p-8 bg-white/[0.01] flex items-center justify-between gap-6">
+          <div
+            data-prize-card
+            className="border border-line p-6 sm:p-8 bg-white/[0.01] flex items-center justify-between gap-6"
+          >
             <div className="font-display font-black text-6xl sm:text-8xl text-offwhite/65 leading-none select-none shrink-0">
               3
             </div>

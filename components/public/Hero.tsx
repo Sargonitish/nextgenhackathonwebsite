@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { TimerState, computeTimerView } from '@/lib/timer';
-import ScrambleText from '@/components/shared/ScrambleText';
+import {
+  gsap,
+  useGSAP,
+  SplitText,
+  ScrambleTextPlugin,
+  prefersReducedMotion,
+} from '@/lib/gsap';
 
 interface HeroProps {
   title?: string;
@@ -97,16 +103,138 @@ export default function Hero({
   // Clean title: strip trailing 4-digit year if present so it doesn't double-render
   const cleanTitle = title.replace(/\s*\b\d{4}\b\s*$/, '').trim() || title;
   const displayYear = title.match(/\b\d{4}\b$/)?.[0] || String(year);
+  const specLabel = '+ [SPEC: AGENT-ORCHESTRATION-V2.6]';
 
-  const solidChars = cleanTitle.toUpperCase().split('');
-  const outlinedChars = displayYear.split('');
+  const heroRef = useRef<HTMLElement>(null);
+  const specRef = useRef<HTMLSpanElement>(null);
+  const solidRef = useRef<HTMLSpanElement>(null);
+  const yearRef = useRef<HTMLSpanElement>(null);
+
+  const { contextSafe } = useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        if (!heroRef.current) return;
+
+        const splits: SplitText[] = [];
+        const headlineChars: Element[] = [];
+
+        if (solidRef.current) {
+          const solidSplit = new SplitText(solidRef.current, { type: 'chars' });
+          splits.push(solidSplit);
+          headlineChars.push(...solidSplit.chars);
+        }
+
+        if (yearRef.current) {
+          const yearSplit = new SplitText(yearRef.current, { type: 'chars' });
+          splits.push(yearSplit);
+          headlineChars.push(...yearSplit.chars);
+        }
+
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+        if (specRef.current) {
+          tl.to(
+            specRef.current,
+            {
+              duration: 0.65,
+              scrambleText: {
+                text: specLabel,
+                chars: 'upperCase',
+                revealDelay: 0.1,
+                speed: 0.45,
+              },
+            },
+            0
+          );
+        }
+
+        if (headlineChars.length > 0) {
+          tl.from(
+            headlineChars,
+            {
+              y: 18,
+              opacity: 0,
+              duration: 0.45,
+              stagger: 0.035,
+              clearProps: 'transform,opacity',
+            },
+            0.05
+          );
+        }
+
+        tl.from(
+          '[data-hero-caliper]',
+          {
+            scaleX: 0,
+            opacity: 0,
+            duration: 0.5,
+            clearProps: 'transform,opacity',
+          },
+          0.25
+        );
+
+        tl.from(
+          '[data-hero-telemetry] > div',
+          {
+            y: 12,
+            opacity: 0,
+            duration: 0.38,
+            stagger: 0.07,
+            clearProps: 'transform,opacity',
+          },
+          0.2
+        );
+
+        return () => {
+          splits.forEach((split) => split.revert());
+        };
+      });
+    },
+    { scope: heroRef, dependencies: [cleanTitle, displayYear], revertOnUpdate: true }
+  );
+
+  const replaySpec = contextSafe(() => {
+    if (!specRef.current || prefersReducedMotion()) return;
+    gsap.to(specRef.current, {
+      duration: 0.55,
+      overwrite: 'auto',
+      scrambleText: {
+        text: specLabel,
+        chars: 'upperCase',
+        revealDelay: 0.05,
+        speed: 0.5,
+      },
+    });
+  });
+
+  const handleScheduleScroll = contextSafe(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      const targetEl = document.querySelector('#schedule');
+      if (!targetEl) return;
+      e.preventDefault();
+      if (prefersReducedMotion()) {
+        targetEl.scrollIntoView({ behavior: 'auto' });
+        return;
+      }
+      gsap.to(window, {
+        duration: 0.75,
+        scrollTo: { y: targetEl, offsetY: 72, autoKill: true },
+        ease: 'power3.inOut',
+      });
+    }
+  );
 
   return (
-    <section className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-8 pt-8 sm:pt-14 pb-16 flex flex-col justify-start text-left">
+    <section ref={heroRef} className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-8 pt-8 sm:pt-14 pb-16 flex flex-col justify-start text-left">
       {/* 1. Architectural Blueprint Corner Crosshairs */}
       <div className="flex items-center justify-between text-yellow font-mono text-xs select-none mb-3">
-        <span>
-          <ScrambleText text="+ [SPEC: AGENT-ORCHESTRATION-V2.6]" trigger="both" durationMs={550} />
+        <span
+          ref={specRef}
+          onMouseEnter={replaySpec}
+          className="cursor-default"
+        >
+          {specLabel}
         </span>
         <span className="hidden sm:inline text-offwhite/70">[COORD: 12.9716° N / 77.5946° E] +</span>
       </div>
@@ -122,36 +250,21 @@ export default function Hero({
         <div className="lg:col-span-8">
           <h1 className="font-display font-black text-[15vw] sm:text-[14vw] lg:text-[160px] leading-[0.88] tracking-tighter text-offwhite select-none">
             {/* Solid Title Letters */}
-            <span className="inline-block mr-2 sm:mr-5">
-              {solidChars.map((char, index) => (
-                <span
-                  key={index}
-                  className="char-fade"
-                  style={{ animationDelay: `${index * 45}ms` }}
-                >
-                  {char}
-                </span>
-              ))}
+            <span ref={solidRef} className="inline-block mr-2 sm:mr-5">
+              {cleanTitle.toUpperCase()}
             </span>
 
             {/* Outlined Year Characters */}
-            <span className="inline-block text-outline">
-              {outlinedChars.map((char, index) => (
-                <span
-                  key={index}
-                  className="char-fade"
-                  style={{
-                    animationDelay: `${(solidChars.length + index) * 45}ms`,
-                  }}
-                >
-                  {char}
-                </span>
-              ))}
+            <span ref={yearRef} className="inline-block text-outline">
+              {displayYear}
             </span>
           </h1>
 
           {/* Architectural Dimension Caliper */}
-          <div className="mt-6 mb-4 font-mono text-xs sm:text-sm text-offwhite/70 tracking-wider flex items-center gap-2 select-none">
+          <div
+            data-hero-caliper
+            className="mt-6 mb-4 origin-left font-mono text-xs sm:text-sm text-offwhite/70 tracking-wider flex items-center gap-2 select-none"
+          >
             <span className="text-yellow" aria-hidden="true">|←</span>
             <span className="h-[1px] flex-1 bg-line max-w-[120px]" aria-hidden="true" />
             <span>24-HOUR AUTONOMOUS SPRINT // 1,440 MIN</span>
@@ -177,7 +290,10 @@ export default function Hero({
           </div>
 
           {/* Terminal Diagnostic Feed (Synced to Event Config) */}
-          <div className="space-y-2.5 font-mono text-xs text-offwhite/85 leading-relaxed">
+          <div
+            data-hero-telemetry
+            className="space-y-2.5 font-mono text-xs text-offwhite/85 leading-relaxed"
+          >
             <div className="flex items-start gap-2">
               <span className="text-yellow" aria-hidden="true">&gt;</span>
               <span>
@@ -229,6 +345,7 @@ export default function Hero({
 
         <a
           href="#schedule"
+          onClick={handleScheduleScroll}
           className="text-offwhite hover:text-yellow underline underline-offset-4 tracking-wider transition-colors"
         >
           See the schedule

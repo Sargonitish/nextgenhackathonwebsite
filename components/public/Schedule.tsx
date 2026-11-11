@@ -1,3 +1,8 @@
+'use client';
+
+import { useRef } from 'react';
+import { gsap, useGSAP } from '@/lib/gsap';
+
 interface ScheduleItem {
   _id?: string;
   time: string;
@@ -6,6 +11,8 @@ interface ScheduleItem {
 }
 
 export default function Schedule({ schedule = [] }: { schedule: ScheduleItem[] }) {
+  const sectionRef = useRef<HTMLElement>(null);
+
   // Default blueprint schedule from Section 2
   const displaySchedule: ScheduleItem[] =
     schedule.length > 0
@@ -22,8 +29,34 @@ export default function Schedule({ schedule = [] }: { schedule: ScheduleItem[] }
           { time: '11:00 AM', title: 'Closing & prizes', description: 'Winners announced. Trophies. Group photo. Go sleep.' },
         ];
 
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.from('[data-schedule-item]', {
+          y: 22,
+          opacity: 0,
+          duration: 0.45,
+          stagger: 0.06,
+          ease: 'power2.out',
+          clearProps: 'transform,opacity',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 82%',
+            once: true,
+          },
+        });
+      });
+    },
+    { scope: sectionRef }
+  );
+
   return (
-    <section id="schedule" className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
+    <section
+      ref={sectionRef}
+      id="schedule"
+      className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10"
+    >
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
         <h2 className="font-display font-black text-3xl sm:text-4xl text-offwhite tracking-tight">
           24-Hour Runbook
@@ -38,6 +71,7 @@ export default function Schedule({ schedule = [] }: { schedule: ScheduleItem[] }
           {displaySchedule.map((item, idx) => (
             <div
               key={item._id || idx}
+              data-schedule-item
               className="relative grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-8 items-start group"
             >
               {/* Left Column: Timestamp */}

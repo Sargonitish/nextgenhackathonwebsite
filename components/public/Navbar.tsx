@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type MouseEvent as ReactMouseEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, ChevronDown, QrCode, LogOut, Ticket, Sparkles } from 'lucide-react';
 import { useStudentAuth } from '@/context/StudentAuthContext';
 import { toast } from 'sonner';
+import { gsap, useGSAP, prefersReducedMotion } from '@/lib/gsap';
 
 interface NavbarProps {
   eventName?: string;
@@ -25,8 +26,33 @@ export default function Navbar({
   const [moreOpen, setMoreOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
+  const navContainerRef = useRef<HTMLElement>(null);
 
   const { user, ticket, logout } = useStudentAuth();
+  const { contextSafe } = useGSAP({ scope: navContainerRef });
+
+  const handleAnchorClick = contextSafe(
+    (e: ReactMouseEvent<HTMLAnchorElement>, href: string) => {
+      setMoreOpen(false);
+      setMobileMenuOpen(false);
+      if (!href.startsWith('#')) return;
+      const targetEl = document.querySelector(href);
+      if (!targetEl) return;
+      e.preventDefault();
+      if (typeof window !== 'undefined') {
+        window.history.replaceState(null, '', href);
+      }
+      if (prefersReducedMotion()) {
+        targetEl.scrollIntoView({ behavior: 'auto' });
+        return;
+      }
+      gsap.to(window, {
+        duration: 0.75,
+        scrollTo: { y: targetEl, offsetY: 72, autoKill: true },
+        ease: 'power3.inOut',
+      });
+    }
+  );
 
   // Close dropdowns on click outside or Escape key
   useEffect(() => {
@@ -82,7 +108,7 @@ export default function Navbar({
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-navy border-b border-line">
+      <header ref={navContainerRef} className="sticky top-0 z-50 w-full bg-navy border-b border-line">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
           {/* Logo / Brand Name */}
           <Link
@@ -110,6 +136,7 @@ export default function Navbar({
               <a
                 key={link.label}
                 href={link.href}
+                onClick={(e) => handleAnchorClick(e, link.href)}
                 className="text-offwhite/80 hover:text-yellow transition-colors tracking-wide uppercase"
               >
                 {link.label}
@@ -143,7 +170,7 @@ export default function Navbar({
                         key={link.label}
                         href={link.href}
                         role="menuitem"
-                        onClick={() => setMoreOpen(false)}
+                        onClick={(e) => handleAnchorClick(e, link.href)}
                         className="block px-4 py-2 text-offwhite/80 hover:text-yellow hover:bg-white/[0.04] transition-colors uppercase tracking-wide"
                       >
                         {link.label}
@@ -320,7 +347,7 @@ export default function Navbar({
               <a
                 key={link.label}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => handleAnchorClick(e, link.href)}
                 className="text-xl font-display font-bold text-offwhite hover:text-yellow transition-colors"
               >
                 {link.label}
