@@ -1,3 +1,7 @@
+'use client';
+
+import ScrambleText from '@/components/shared/ScrambleText';
+
 interface TrackItem {
   _id?: string;
   title: string;
@@ -49,13 +53,13 @@ export default function Tracks({ tracks = [] }: { tracks: TrackItem[] }) {
             >
               {/* Left: Track Number */}
               <div className="font-display font-black text-3xl sm:text-5xl text-offwhite/40 group-hover:text-yellow transition-colors shrink-0">
-                {trackNum}
+                <ScrambleText text={trackNum} trigger="hover" durationMs={320} />
               </div>
 
               {/* Middle: Title & Description */}
               <div className="flex-1 pr-4">
                 <h3 className="font-display font-bold text-xl sm:text-3xl text-offwhite group-hover:text-yellow transition-colors">
-                  {track.title}
+                  <ScrambleText text={track.title} trigger="hover" durationMs={380} />
                 </h3>
                 <p className="mt-1.5 font-mono text-xs sm:text-sm text-offwhite/60 leading-relaxed max-w-3xl">
                   {track.description}

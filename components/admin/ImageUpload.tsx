@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion';
 import { Upload, X, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { compressImage } from '@/lib/compressImage';
@@ -24,12 +25,16 @@ export default function ImageUpload({
   label = 'Upload Image',
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dragDepthRef = useRef(0);
+  const prefersReducedMotion = useReducedMotion();
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const offsetX = useSpring(rawX, { stiffness: 300, damping: 24 });
+  const offsetY = useSpring(rawY, { stiffness: 300, damping: 24 });
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processFile = async (file: File) => {
     // Check size < 5MB
     if (file.size > 5 * 1024 * 1024) {
       toast.error('File size exceeds 5MB limit');
@@ -68,6 +73,56 @@ export default function ImageUpload({
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processFile(file);
+  };
+
+  const resetDrag = () => {
+    dragDepthRef.current = 0;
+    setIsDragging(false);
+    rawX.set(0);
+    rawY.set(0);
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragDepthRef.current += 1;
+    setIsDragging(true);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (prefersReducedMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relX = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2 || 1);
+    const relY = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2 || 1);
+    rawX.set(Math.max(-1, Math.min(1, relX)) * 10);
+    rawY.set(Math.max(-1, Math.min(1, relY)) * 8);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+    if (dragDepthRef.current === 0) {
+      resetDrag();
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    resetDrag();
+    if (uploading) return;
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    await processFile(file);
   };
 
   const handleRemove = (e: React.MouseEvent) => {
@@ -116,8 +171,16 @@ export default function ImageUpload({
         </div>
       ) : (
         <div
-          onClick={() => fileInputRef.current?.click()}
-          className={`flex flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-black/20 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all p-4 ${aspectClass}`}
+          onClick={() => !uploading && fileInputRef.current?.click()}
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`flex flex-col items-center justify-center rounded-xl border border-dashed cursor-pointer transition-all p-4 ${aspectClass} ${
+            isDragging
+              ? 'border-yellow bg-yellow/10 ring-2 ring-yellow/40 scale-[1.01]'
+              : 'border-white/20 bg-black/20 hover:border-primary/50 hover:bg-primary/5'
+          }`}
         >
           {uploading ? (
             <div className="flex flex-col items-center gap-2 text-primary font-mono text-xs">
@@ -125,11 +188,16 @@ export default function ImageUpload({
               <span>Uploading...</span>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2 text-neutral-400 text-center font-mono text-xs">
-              <Upload className="w-5 h-5 text-neutral-500" />
-              <span>Click or drag image</span>
+            <motion.div
+              style={prefersReducedMotion ? undefined : { x: offsetX, y: offsetY }}
+              className="pointer-events-none flex flex-col items-center gap-2 text-neutral-400 text-center font-mono text-xs"
+            >
+              <Upload className={`w-5 h-5 transition-colors ${isDragging ? 'text-yellow' : 'text-neutral-500'}`} />
+              <span className={isDragging ? 'text-yellow font-bold' : undefined}>
+                {isDragging ? 'Drop image to upload' : 'Click or drag image'}
+              </span>
               <span className="text-[10px] text-neutral-500">Max 5MB (JPG, PNG, WebP)</span>
-            </div>
+            </motion.div>
           )}
         </div>
       )}

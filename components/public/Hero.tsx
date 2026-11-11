@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { TimerState, computeTimerView } from '@/lib/timer';
+import ScrambleText from '@/components/shared/ScrambleText';
 
 interface HeroProps {
   title?: string;
@@ -94,7 +95,9 @@ export default function Hero({
     <section className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-8 pt-8 sm:pt-14 pb-16 flex flex-col justify-start text-left">
       {/* 1. Architectural Blueprint Corner Crosshairs */}
       <div className="flex items-center justify-between text-yellow font-mono text-xs select-none mb-3">
-        <span>+ [SPEC: AGENT-ORCHESTRATION-V2.6]</span>
+        <span>
+          <ScrambleText text="+ [SPEC: AGENT-ORCHESTRATION-V2.6]" trigger="both" durationMs={550} />
+        </span>
         <span className="hidden sm:inline">[COORD: 12.9716° N / 77.5946° E] +</span>
       </div>
 
@@ -217,7 +220,7 @@ export default function Hero({
         {registrationOpen ? (
           <Link
             href="/register"
-            className="px-7 py-3.5 bg-yellow text-navy font-bold uppercase tracking-wider border border-yellow shadow-hard hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_#FFD23F] transition-all"
+            className="px-7 py-3.5 bg-yellow text-navy font-bold uppercase tracking-wider border border-yellow shadow-hard hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_#FFD23F] active:translate-x-[4px] active:translate-y-[4px] active:shadow-[1px_1px_0_#FFD23F] transition-all duration-150"
           >
             Register your team →
           </Link>

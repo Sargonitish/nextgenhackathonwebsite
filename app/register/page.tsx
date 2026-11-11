@@ -23,6 +23,7 @@ import { teamRegistrationSchema } from '@/lib/validators';
 import { toast } from 'sonner';
 import GoogleSignInButton, { GoogleVerifiedUser } from '@/components/public/GoogleSignInButton';
 import { useStudentAuth } from '@/context/StudentAuthContext';
+import DynamicButton, { DynamicButtonState } from '@/components/shared/DynamicButton';
 
 interface EventConfig {
   name: string;
@@ -41,6 +42,7 @@ export default function RegisterPage() {
   const [config, setConfig] = useState<EventConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [submitState, setSubmitState] = useState<DynamicButtonState>('idle');
   const [closedReason, setClosedReason] = useState<string | null>(null);
   const [manualMode, setManualMode] = useState(false);
 
@@ -139,8 +141,15 @@ export default function RegisterPage() {
     toast.success('Logged out');
   };
 
+  useEffect(() => {
+    if (submitState !== 'error') return;
+    const timer = setTimeout(() => setSubmitState('idle'), 2200);
+    return () => clearTimeout(timer);
+  }, [submitState]);
+
   const onSubmit = async (values: any) => {
     setSubmitting(true);
+    setSubmitState('loading');
     try {
       const payload = {
         ...values,
@@ -158,6 +167,7 @@ export default function RegisterPage() {
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.error || 'Failed to complete registration');
+        setSubmitState('error');
         setSubmitting(false);
         return;
       }
@@ -165,10 +175,12 @@ export default function RegisterPage() {
       // Update student ticket state in context and storage
       await refreshTicket();
 
+      setSubmitState('success');
       toast.success('Registration successful! Generating QR pass...');
       router.push(`/register/success/${data.teamId}?token=${data.token}`);
     } catch {
       toast.error('Network error during registration');
+      setSubmitState('error');
       setSubmitting(false);
     }
   };
@@ -695,23 +707,21 @@ export default function RegisterPage() {
           </div>
 
           {/* Submit Button */}
-          <button
+          <DynamicButton
             type="submit"
-            disabled={submitting}
-            className="w-full py-4 bg-yellow text-navy font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 border border-yellow shadow-hard hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-hard-sm transition-all disabled:opacity-40 cursor-pointer"
-          >
-            {submitting ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                VALIDATING &amp; ISSUING OFFICIAL TEAM QR...
-              </>
-            ) : (
+            state={submitState}
+            disabled={submitting || submitState === 'success'}
+            idleLabel={
               <>
                 <span>CONFIRM &amp; SUBMIT TEAM REGISTRATION</span>
                 <ArrowRight className="w-4 h-4" />
               </>
-            )}
-          </button>
+            }
+            loadingLabel="VALIDATING & ISSUING OFFICIAL TEAM QR..."
+            successLabel="PASS ISSUED — REDIRECTING..."
+            errorLabel="REGISTRATION FAILED — TRY AGAIN"
+            className="w-full py-4 bg-yellow text-navy font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 border border-yellow shadow-hard hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-hard-sm transition-all cursor-pointer"
+          />
         </form>
       </div>
     </div>

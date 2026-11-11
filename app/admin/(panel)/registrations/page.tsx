@@ -17,6 +17,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import HoldToConfirmButton from '@/components/shared/HoldToConfirmButton';
+import ScrollFadeList from '@/components/shared/ScrollFadeList';
 
 export default function RegistrationsPage() {
   const searchParams = useSearchParams();
@@ -79,10 +81,6 @@ export default function RegistrationsPage() {
   };
 
   const handleDeleteTeam = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete team "${name}"? This cannot be undone.`)) {
-      return;
-    }
-
     setDeleting(true);
     try {
       const res = await fetch(`/api/admin/teams/${id}`, {
@@ -237,13 +235,14 @@ export default function RegistrationsPage() {
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
-                        <button
-                          onClick={() => handleDeleteTeam(t._id, t.teamName)}
-                          className="p-1.5 rounded border border-red-500/20 text-red-400 hover:bg-red-500/10"
-                          title="Delete Team"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        <HoldToConfirmButton
+                          compact
+                          label="Hold"
+                          holdingLabel="..."
+                          disabled={deleting}
+                          onConfirm={() => handleDeleteTeam(t._id, t.teamName)}
+                          title="Hold to delete team"
+                        />
                       </div>
                     </td>
                   </tr>
@@ -323,47 +322,46 @@ export default function RegistrationsPage() {
               <h3 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
                 Full Member Rosters
               </h3>
-              <div className="divide-y divide-white/5 border border-white/10 rounded-xl overflow-hidden bg-black/20">
-                {selectedTeam.members?.map((m: any, idx: number) => (
-                  <div key={idx} className="p-3.5 flex items-start justify-between text-xs">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-white">{m.name}</span>
-                        {m.isLeader && (
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-primary/20 text-primary font-bold">
-                            Leader
+              <div className="border border-white/10 rounded-xl overflow-hidden bg-black/20">
+                <ScrollFadeList className="max-h-72 divide-y divide-white/5">
+                  {selectedTeam.members?.map((m: any, idx: number) => (
+                    <div key={idx} className="p-3.5 flex items-start justify-between text-xs">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white">{m.name}</span>
+                          {m.isLeader && (
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-primary/20 text-primary font-bold">
+                              Leader
+                            </span>
+                          )}
+                          <span
+                            className={`text-[10px] px-1.5 py-0.2 rounded ${
+                              m.present ? 'bg-emerald-500/20 text-emerald-400' : 'bg-neutral-800 text-neutral-500'
+                            }`}
+                          >
+                            {m.present ? 'Present' : 'Absent'}
                           </span>
-                        )}
-                        <span
-                          className={`text-[10px] px-1.5 py-0.2 rounded ${
-                            m.present ? 'bg-emerald-500/20 text-emerald-400' : 'bg-neutral-800 text-neutral-500'
-                          }`}
-                        >
-                          {m.present ? 'Present' : 'Absent'}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-neutral-400 mt-1 space-y-0.5">
-                        <div>📧 {m.email}</div>
-                        <div>📞 {m.phone}</div>
-                        <div>🏛 {m.college} • {m.department} (Year {m.year}) {m.registerNumber ? `• Reg: ${m.registerNumber}` : ''}</div>
+                        </div>
+                        <div className="text-[11px] text-neutral-400 mt-1 space-y-0.5">
+                          <div>📧 {m.email}</div>
+                          <div>📞 {m.phone}</div>
+                          <div>🏛 {m.college} • {m.department} (Year {m.year}) {m.registerNumber ? `• Reg: ${m.registerNumber}` : ''}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </ScrollFadeList>
               </div>
             </div>
 
             {/* Modal Actions */}
             <div className="flex justify-between items-center pt-4 border-t border-white/10">
-              <button
-                type="button"
-                onClick={() => handleDeleteTeam(selectedTeam._id, selectedTeam.teamName)}
+              <HoldToConfirmButton
+                label="Hold to Delete Team"
+                holdingLabel="Keep Holding to Confirm..."
                 disabled={deleting}
-                className="px-3.5 py-2 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 flex items-center gap-1.5"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete Team
-              </button>
+                onConfirm={() => handleDeleteTeam(selectedTeam._id, selectedTeam.teamName)}
+              />
               <button
                 type="button"
                 onClick={() => setSelectedTeam(null)}
