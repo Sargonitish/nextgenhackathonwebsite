@@ -52,11 +52,11 @@ export default function Footer({
     <footer className="border-t border-line bg-navy pt-16 overflow-hidden relative z-10 font-mono">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
         {/* Top Info Strip: MadeBy, Email, Socials */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-16 text-xs text-offwhite/70">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-16 text-xs text-offwhite/80">
           {/* Made by students */}
           <div className="space-y-1">
-            <p className="text-offwhite/50">{madeBy}</p>
-            <p className="text-offwhite/30 text-[11px]">All rights reserved © 2026</p>
+            <p className="text-offwhite/75">{madeBy}</p>
+            <p className="text-offwhite/65 text-[11px]">All rights reserved © 2026</p>
           </div>
 
           {/* Contact Email & Socials as Plain Text Links with → */}
@@ -133,7 +133,7 @@ export default function Footer({
 
             <Link
               href="/admin/login"
-              className="hover:text-yellow transition-colors inline-flex items-center gap-1 text-offwhite/40"
+              className="hover:text-yellow transition-colors inline-flex items-center gap-1 text-offwhite/65"
             >
               <span>Admin</span>
               <span>→</span>
@@ -142,15 +142,17 @@ export default function Footer({
         </div>
 
         {/* Huge Cropped Wordmark (Only Top 60-70% Visible) */}
-        <div
+        <button
+          type="button"
           onClick={handleWordmarkClick}
-          className="select-none cursor-pointer overflow-hidden -mb-4 sm:-mb-8 lg:-mb-12"
+          aria-label="Invert blueprint theme colors"
+          className="w-full text-left select-none cursor-pointer overflow-hidden -mb-4 sm:-mb-8 lg:-mb-12"
           title="Click 5 times for easter egg"
         >
-          <div className="font-display font-black text-[20vw] leading-[0.72] tracking-tighter text-offwhite/10 hover:text-offwhite/20 transition-colors uppercase whitespace-nowrap">
+          <div className="font-display font-black text-[20vw] leading-[0.72] tracking-tighter text-offwhite/15 hover:text-offwhite/25 transition-colors uppercase whitespace-nowrap">
             {eventName}
           </div>
-        </div>
+        </button>
       </div>
     </footer>
   );

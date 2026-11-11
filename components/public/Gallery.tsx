@@ -61,61 +61,52 @@ export default function Gallery({ gallery = [] }: { gallery?: GalleryItem[] }) {
   }, [selectedPhoto]);
 
   return (
-    <section id="gallery" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
-      {/* Blueprint Header Metadata */}
-      <div className="flex items-center justify-between font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-8">
-        <div>08 / PHOTO GALLERY &amp; MOMENTS</div>
-        <div className="hidden sm:inline">[VISUAL TELEMETRY // ARCHIVAL LOGS]</div>
-      </div>
-
+    <section id="gallery" className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       <div className="mb-10">
-        <h2 className="font-display text-2xl sm:text-3xl font-black text-offwhite uppercase tracking-tight">
-          FIELD MOMENTS &amp; ARCHIVES
+        <h2 className="font-display text-3xl sm:text-4xl font-black text-offwhite tracking-tight">
+          Field Moments &amp; Archives
         </h2>
-        <p className="font-mono text-xs sm:text-sm text-offwhite/70 mt-2 max-w-2xl leading-relaxed">
-          Snapshots from past sprints, 3 AM debugging marathons, whiteboarding sessions, and stage demos.
+        <p className="font-mono text-xs sm:text-sm text-offwhite/75 mt-2 max-w-2xl leading-relaxed">
+          Snapshots from past sprints, late-night debugging sessions, whiteboarding discussions, and stage demos.
         </p>
       </div>
 
-      {/* Blueprint Photo Contact-Sheet Grid */}
+      {/* Contact-Sheet Grid (Keyboard accessible) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayItems.map((item, idx) => (
-          <div
+          <button
+            type="button"
             key={item._id || idx}
             onClick={() => setSelectedPhoto(item)}
-            className="group border border-line bg-[#0c223f] hover:border-yellow shadow-hard-sm transition-all duration-150 cursor-pointer flex flex-col justify-between overflow-hidden"
+            className="group text-left border border-line bg-[#0c223f] hover:border-yellow shadow-hard-sm transition-colors duration-150 cursor-pointer flex flex-col justify-between overflow-hidden"
           >
-            {/* Architectural Camera Spec Bar */}
-            <div className="px-3.5 py-2 border-b border-line bg-navy flex items-center justify-between font-mono text-[10px] text-offwhite/50">
-              <span className="text-yellow font-bold uppercase tracking-wider">
-                + [SHOT: 0{idx + 1}]
-              </span>
-              <span className="flex items-center gap-1 group-hover:text-yellow transition-colors">
-                <ZoomIn className="w-3 h-3" />
-                <span className="hidden sm:inline">[EXPAND]</span>
-              </span>
-            </div>
-
             {/* Photo Container */}
             <div className="relative h-60 w-full overflow-hidden bg-navy">
               <Image
                 src={item.imageUrl}
                 alt={item.caption || `Hackathon Moment 0${idx + 1}`}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:group-hover:scale-100"
                 unoptimized
               />
-              <div className="absolute inset-0 bg-navy/20 group-hover:bg-transparent transition-colors" />
+              <div className="absolute inset-0 bg-navy/15 group-hover:bg-transparent transition-colors" />
+              <span
+                aria-hidden="true"
+                className="absolute top-3 right-3 px-2 py-1 bg-navy/90 border border-yellow/60 text-yellow font-mono text-[10px] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1"
+              >
+                <ZoomIn className="w-3 h-3" />
+                <span>View</span>
+              </span>
             </div>
 
-            {/* Technical Caption Plate */}
-            <div className="p-3.5 border-t border-line bg-[#0c223f] font-mono text-xs text-offwhite/80 group-hover:text-offwhite transition-colors flex items-start gap-2">
-              <span className="text-yellow font-bold">&gt;</span>
+            {/* Caption Plate */}
+            <div className="w-full p-3.5 border-t border-line bg-[#0c223f] font-mono text-xs text-offwhite/85 group-hover:text-offwhite transition-colors flex items-start gap-2">
+              <span className="text-yellow font-bold" aria-hidden="true">&gt;</span>
               <span className="line-clamp-2 leading-relaxed">
                 {item.caption || `HackX Sprint Snapshot 0${idx + 1}`}
               </span>
             </div>
-          </div>
+          </button>
         ))}
       </div>
 
@@ -132,17 +123,17 @@ export default function Gallery({ gallery = [] }: { gallery?: GalleryItem[] }) {
             {/* Modal Window Title Bar */}
             <div className="px-4 py-3 border-b border-line bg-[#0c223f] flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-yellow animate-pulse" />
+                <span className="w-2 h-2 bg-yellow animate-pulse motion-reduce:animate-none" />
                 <span className="text-yellow font-bold uppercase tracking-wider">
-                  &gt;_ ARCHIVAL PHOTOMETRY VIEWER
+                  Archive Viewer
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedPhoto(null)}
-                className="text-offwhite/60 hover:text-yellow transition-colors flex items-center gap-1 uppercase text-[11px] font-bold"
+                className="text-offwhite/80 hover:text-yellow transition-colors flex items-center gap-1 uppercase text-[11px] font-bold cursor-pointer"
               >
-                <span>[✕ CLOSE (ESC)]</span>
+                <span>Close (Esc)</span>
               </button>
             </div>
 
@@ -160,11 +151,11 @@ export default function Gallery({ gallery = [] }: { gallery?: GalleryItem[] }) {
             {/* Lightbox Footer Caption Plate */}
             <div className="p-4 border-t border-line bg-[#0c223f] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-2 text-offwhite">
-                <span className="text-yellow font-bold">&gt;</span>
+                <span className="text-yellow font-bold" aria-hidden="true">&gt;</span>
                 <span>{selectedPhoto.caption || 'Archived Hackathon Moment'}</span>
               </div>
-              <span className="text-[10px] text-offwhite/40 tracking-widest uppercase">
-                [HIGH RESOLUTION // ARCHIVE SPEC]
+              <span className="text-[10px] text-offwhite/65 tracking-widest uppercase">
+                Press Esc to dismiss
               </span>
             </div>
           </div>

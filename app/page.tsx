@@ -99,6 +99,11 @@ export default async function HomePage() {
             timer={plainEvent.timer}
             registrationOpen={plainEvent.settings?.registrationOpen ?? true}
             eventId={plainEvent._id.toString()}
+            prizePool={plainEvent.content?.prizePool || '₹1,00,000'}
+            tracksCount={plainEvent.tracks?.length || 4}
+            maxTeams={plainEvent.settings?.maxTeams || 150}
+            minTeamSize={plainEvent.settings?.minTeamSize || 2}
+            maxTeamSize={plainEvent.settings?.maxTeamSize || 4}
           />
         )}
 
@@ -108,6 +113,8 @@ export default async function HomePage() {
             title={plainEvent.content?.aboutTitle}
             text={plainEvent.content?.aboutText}
             prizePool={plainEvent.content?.prizePool || '₹1,00,000'}
+            tracksCount={plainEvent.tracks?.length || 4}
+            maxTeams={plainEvent.settings?.maxTeams || 150}
           />
         )}
 

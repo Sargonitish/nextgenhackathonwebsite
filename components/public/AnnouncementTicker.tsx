@@ -35,7 +35,7 @@ export default function AnnouncementTicker() {
       <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-2 flex items-center gap-4 overflow-hidden">
         {/* Live Broadcast Badge */}
         <div className="flex items-center gap-2 px-2.5 py-0.5 border border-yellow bg-yellow/10 text-yellow text-[11px] font-bold uppercase tracking-wider shrink-0 select-none">
-          <span className="w-1.5 h-1.5 bg-yellow animate-pulse" />
+          <span className="w-1.5 h-1.5 bg-yellow animate-pulse motion-reduce:animate-none" />
           <span>BROADCAST</span>
         </div>
 
@@ -67,6 +67,13 @@ export default function AnnouncementTicker() {
         }
         .animate-marquee:hover {
           animation-play-state: paused;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-marquee {
+            animation: none;
+            transform: none;
+            white-space: normal;
+          }
         }
       `}</style>
     </div>

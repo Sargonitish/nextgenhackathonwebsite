@@ -13,6 +13,11 @@ interface HeroProps {
   timer?: TimerState | null;
   registrationOpen?: boolean;
   eventId?: string;
+  prizePool?: string;
+  tracksCount?: number;
+  maxTeams?: number;
+  minTeamSize?: number;
+  maxTeamSize?: number;
 }
 
 export default function Hero({
@@ -23,6 +28,11 @@ export default function Hero({
   timer,
   registrationOpen = true,
   eventId,
+  prizePool = '₹1,00,000',
+  tracksCount = 4,
+  maxTeams = 150,
+  minTeamSize = 2,
+  maxTeamSize = 4,
 }: HeroProps) {
   const [regCount, setRegCount] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<{
@@ -98,11 +108,11 @@ export default function Hero({
         <span>
           <ScrambleText text="+ [SPEC: AGENT-ORCHESTRATION-V2.6]" trigger="both" durationMs={550} />
         </span>
-        <span className="hidden sm:inline">[COORD: 12.9716° N / 77.5946° E] +</span>
+        <span className="hidden sm:inline text-offwhite/70">[COORD: 12.9716° N / 77.5946° E] +</span>
       </div>
 
       {/* 2. Top Mono Metadata Stamp */}
-      <div className="font-mono text-xs sm:text-sm text-offwhite/50 uppercase tracking-widest mb-4">
+      <div className="font-mono text-xs sm:text-sm text-offwhite/70 uppercase tracking-widest mb-4">
         {collegeName} / 24-HOUR HACKATHON / {year}
       </div>
 
@@ -141,74 +151,61 @@ export default function Hero({
           </h1>
 
           {/* Architectural Dimension Caliper */}
-          <div className="mt-6 mb-4 font-mono text-xs sm:text-sm text-offwhite/50 tracking-wider flex items-center gap-2 select-none">
-            <span className="text-yellow">|←</span>
-            <span className="h-[1px] flex-1 bg-line max-w-[120px]" />
+          <div className="mt-6 mb-4 font-mono text-xs sm:text-sm text-offwhite/70 tracking-wider flex items-center gap-2 select-none">
+            <span className="text-yellow" aria-hidden="true">|←</span>
+            <span className="h-[1px] flex-1 bg-line max-w-[120px]" aria-hidden="true" />
             <span>24-HOUR AUTONOMOUS SPRINT // 1,440 MIN</span>
-            <span className="h-[1px] flex-1 bg-line max-w-[120px]" />
-            <span className="text-yellow">→|</span>
+            <span className="h-[1px] flex-1 bg-line max-w-[120px]" aria-hidden="true" />
+            <span className="text-yellow" aria-hidden="true">→|</span>
           </div>
 
           {/* Student Voice Subhead / Dynamic Tagline */}
-          <p className="max-w-2xl font-mono text-xs sm:text-sm md:text-base text-offwhite/80 leading-relaxed">
+          <p className="max-w-2xl font-mono text-xs sm:text-sm md:text-base text-offwhite/85 leading-relaxed">
             {tagline || '24 hours. Build an agent that actually does something. Free food, loud music, one trophy.'}
           </p>
-
-          {/* Fast-Spec Feature Badges */}
-          <div className="mt-5 flex flex-wrap gap-2.5 font-mono text-[11px] text-offwhite/70">
-            <span className="px-2.5 py-1 border border-line bg-white/[0.02]">
-              [ 01/ALL BRANCHES ELIGIBLE ]
-            </span>
-            <span className="px-2.5 py-1 border border-line bg-white/[0.02]">
-              [ 02/ZERO REGISTRATION FEE ]
-            </span>
-            <span className="px-2.5 py-1 border border-line bg-white/[0.02]">
-              [ 03/HARDWARE DEV KITS ]
-            </span>
-          </div>
         </div>
 
-        {/* Right Column: Live Telemetry Terminal HUD Box */}
+        {/* Right Column: Live Edition Telemetry HUD Box */}
         <div className="lg:col-span-4 border border-line p-5 sm:p-6 bg-[#0c223f] shadow-hard-sm relative">
           {/* Terminal Title Bar */}
           <div className="flex items-center justify-between pb-3 border-b border-line mb-4 font-mono text-[11px]">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-yellow animate-pulse" />
-              <span className="text-yellow font-bold uppercase tracking-wider">&gt;_ SYSTEM TELEMETRY</span>
+              <span className="w-2 h-2 bg-yellow animate-pulse motion-reduce:animate-none" />
+              <span className="text-yellow font-bold uppercase tracking-wider">&gt;_ EVENT TELEMETRY</span>
             </div>
-            <span className="text-offwhite/40">[LIVE]</span>
+            <span className="text-offwhite/65">[LIVE]</span>
           </div>
 
-          {/* Terminal Diagnostic Feed */}
-          <div className="space-y-2.5 font-mono text-xs text-offwhite/80 leading-relaxed">
+          {/* Terminal Diagnostic Feed (Synced to Event Config) */}
+          <div className="space-y-2.5 font-mono text-xs text-offwhite/85 leading-relaxed">
             <div className="flex items-start gap-2">
-              <span className="text-yellow">&gt;</span>
+              <span className="text-yellow" aria-hidden="true">&gt;</span>
               <span>
-                <strong className="text-offwhite">CLUSTER:</strong> 40 autonomous agents on-grid
+                <strong className="text-offwhite">FORMAT:</strong> 24-hour sprint • Teams of {minTeamSize}–{maxTeamSize}
               </span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-yellow">&gt;</span>
+              <span className="text-yellow" aria-hidden="true">&gt;</span>
               <span>
-                <strong className="text-offwhite">BOUNTY:</strong> ₹1,00,000 cash pool + cloud credits
+                <strong className="text-offwhite">BOUNTY:</strong> {prizePool} prize pool + partner credits
               </span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-yellow">&gt;</span>
+              <span className="text-yellow" aria-hidden="true">&gt;</span>
               <span>
-                <strong className="text-offwhite">AMENITIES:</strong> Unlimited caffeine, snacks &amp; 24h WiFi
+                <strong className="text-offwhite">TRACKS:</strong> {tracksCount} open engineering build tracks
               </span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-yellow">&gt;</span>
+              <span className="text-yellow" aria-hidden="true">&gt;</span>
               <span>
-                <strong className="text-offwhite">MANDATE:</strong> Runnable CLI / agents, zero slides
+                <strong className="text-offwhite">CAPACITY:</strong> {maxTeams} team slots max (in-person)
               </span>
             </div>
             {regCount > 0 && (
               <div className="pt-2 border-t border-line text-yellow font-bold flex items-center justify-between">
                 <span>REGISTERED TEAMS:</span>
-                <span>{regCount} / 150</span>
+                <span>{regCount} / {maxTeams}</span>
               </div>
             )}
           </div>
@@ -220,12 +217,12 @@ export default function Hero({
         {registrationOpen ? (
           <Link
             href="/register"
-            className="px-7 py-3.5 bg-yellow text-navy font-bold uppercase tracking-wider border border-yellow shadow-hard hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_#FFD23F] active:translate-x-[4px] active:translate-y-[4px] active:shadow-[1px_1px_0_#FFD23F] transition-all duration-150"
+            className="px-7 py-3.5 bg-yellow text-navy font-bold uppercase tracking-wider border border-yellow shadow-hard hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_#FFD23F] active:translate-x-[4px] active:translate-y-[4px] active:shadow-[1px_1px_0_#FFD23F] transition-[transform,box-shadow,background-color] duration-150"
           >
             Register your team →
           </Link>
         ) : (
-          <span className="px-7 py-3.5 bg-line text-offwhite/40 font-bold uppercase cursor-not-allowed">
+          <span className="px-7 py-3.5 bg-line text-offwhite/65 font-bold uppercase cursor-not-allowed">
             Registrations Closed
           </span>
         )}
@@ -245,38 +242,38 @@ export default function Hero({
             HACKING IS LIVE
           </div>
         ) : timeLeft.status === 'ended' ? (
-          <div className="text-xl sm:text-2xl font-bold text-offwhite/50 tracking-widest">
+          <div className="text-xl sm:text-2xl font-bold text-offwhite/65 tracking-widest">
             HACKX {year} HAS ENDED
           </div>
         ) : (
           <div className="flex items-center gap-3 sm:gap-6 text-xl sm:text-3xl font-bold tracking-wider">
             <div className="flex items-baseline gap-1">
               <span>{timeLeft.days}</span>
-              <span className="text-[11px] sm:text-xs text-offwhite/50 font-normal">d</span>
+              <span className="text-[11px] sm:text-xs text-offwhite/65 font-normal">d</span>
             </div>
             <span className="text-line">|</span>
 
             <div className="flex items-baseline gap-1">
               <span>{timeLeft.hours}</span>
-              <span className="text-[11px] sm:text-xs text-offwhite/50 font-normal">h</span>
+              <span className="text-[11px] sm:text-xs text-offwhite/65 font-normal">h</span>
             </div>
             <span className="text-line">|</span>
 
             <div className="flex items-baseline gap-1">
               <span>{timeLeft.minutes}</span>
-              <span className="text-[11px] sm:text-xs text-offwhite/50 font-normal">m</span>
+              <span className="text-[11px] sm:text-xs text-offwhite/65 font-normal">m</span>
             </div>
             <span className="text-line">|</span>
 
             <div className="flex items-baseline gap-1 text-yellow">
               <span>{timeLeft.seconds}</span>
-              <span className="text-[11px] sm:text-xs text-offwhite/50 font-normal">s</span>
+              <span className="text-[11px] sm:text-xs text-offwhite/65 font-normal">s</span>
             </div>
           </div>
         )}
 
-        <div className="text-xs text-offwhite/50 tracking-widest hidden md:block">
-          [ 150 SEATS MAX // IN-PERSON // IST (+05:30) ]
+        <div className="text-xs text-offwhite/65 tracking-widest hidden md:block">
+          [ {maxTeams} TEAMS MAX // IN-PERSON // IST (+05:30) ]
         </div>
       </div>
     </section>

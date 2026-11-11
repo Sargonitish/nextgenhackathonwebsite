@@ -2,12 +2,16 @@ interface AboutProps {
   title?: string;
   text?: string;
   prizePool?: string;
+  tracksCount?: number;
+  maxTeams?: number;
 }
 
 export default function About({
   title,
   text,
   prizePool = '₹1,00,000',
+  tracksCount = 4,
+  maxTeams = 150,
 }: AboutProps) {
   const defaultParagraphs = [
     'Most hackathons end with half-baked presentation decks and polished Figma prototypes that do nothing. HackX is different. We care about working software, runnable CLI binaries, and autonomous systems that execute tasks without human hand-holding.',
@@ -24,16 +28,13 @@ export default function About({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
         {/* Left Column (60% on desktop) - Statement Headline */}
         <div className="lg:col-span-7">
-          <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-4">
-            MANIFESTO
-          </div>
           <h2 className="font-display font-black text-3xl sm:text-5xl lg:text-6xl text-offwhite leading-[1.05] tracking-tight">
             {title || 'Not another hackathon. A 24-hour sprint to build agents that act on their own.'}
           </h2>
         </div>
 
         {/* Right Column (40% on desktop) - Dynamic / Student Voice Paragraphs + Stats Strip */}
-        <div className="lg:col-span-5 flex flex-col justify-between font-mono text-xs sm:text-sm text-offwhite/80 space-y-5 leading-relaxed">
+        <div className="lg:col-span-5 flex flex-col justify-between font-mono text-xs sm:text-sm text-offwhite/85 space-y-5 leading-relaxed">
           {paragraphs.map((p, idx) => (
             <p key={idx}>{p}</p>
           ))}
@@ -41,12 +42,12 @@ export default function About({
           {/* Stats Strip with Hairline Dividers */}
           <div className="pt-6 border-t border-line flex flex-wrap items-center gap-3 sm:gap-4 font-mono text-xs text-offwhite tracking-wider">
             <span>24 HRS</span>
-            <span className="text-line">|</span>
-            <span>4 TRACKS</span>
-            <span className="text-line">|</span>
+            <span className="text-line" aria-hidden="true">|</span>
+            <span>{tracksCount} TRACKS</span>
+            <span className="text-line" aria-hidden="true">|</span>
             <span className="text-yellow font-bold">{prizePool}</span>
-            <span className="text-line">|</span>
-            <span>150 SEATS</span>
+            <span className="text-line" aria-hidden="true">|</span>
+            <span>{maxTeams} TEAMS</span>
           </div>
         </div>
       </div>

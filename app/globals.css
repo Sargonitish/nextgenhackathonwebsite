@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700..800&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -31,7 +29,7 @@ html {
 body {
   background-color: var(--navy);
   color: var(--offwhite);
-  overflow-x: hidden;
+  overflow-x: clip;
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -104,6 +102,21 @@ body.custom-cursor-active textarea {
 .btn-blueprint-yellow:hover {
   transform: translate(3px, 3px);
   box-shadow: 2px 2px 0 #FFD23F;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .char-fade {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .btn-blueprint:hover,
+  .btn-blueprint-yellow:hover {
+    transform: none;
+  }
 }
 
 /* Accessible visible focus states */

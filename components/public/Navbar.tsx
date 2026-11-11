@@ -22,19 +22,35 @@ export default function Navbar({
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
 
   const { user, ticket, logout } = useStudentAuth();
 
-  // Close dropdown on click outside
+  // Close dropdowns on click outside or Escape key
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setDropdownOpen(false);
+      }
+      if (moreRef.current && !moreRef.current.contains(target)) {
+        setMoreOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setDropdownOpen(false);
+        setMoreOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -59,6 +75,10 @@ export default function Navbar({
   ];
 
   const links = allLinks.filter((l) => l.show);
+
+  const primaryAnchors = new Set(['#about', '#tracks', '#schedule', '#prizes', '#coordinators', '#faqs']);
+  const primaryLinks = links.filter((l) => primaryAnchors.has(l.href));
+  const moreLinks = links.filter((l) => !primaryAnchors.has(l.href));
 
   return (
     <>
@@ -85,16 +105,54 @@ export default function Navbar({
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-7 font-mono text-xs">
-            {links.map((link) => (
+          <nav aria-label="Primary" className="hidden md:flex items-center gap-6 font-mono text-xs">
+            {primaryLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="text-offwhite/70 hover:text-offwhite transition-colors tracking-wide uppercase"
+                className="text-offwhite/80 hover:text-yellow transition-colors tracking-wide uppercase"
               >
                 {link.label}
               </a>
             ))}
+
+            {moreLinks.length > 0 && (
+              <div className="relative" ref={moreRef}>
+                <button
+                  type="button"
+                  onClick={() => setMoreOpen((prev) => !prev)}
+                  aria-expanded={moreOpen}
+                  aria-haspopup="menu"
+                  className="text-offwhite/80 hover:text-yellow transition-colors tracking-wide uppercase inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Sections</span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-150 ${
+                      moreOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {moreOpen && (
+                  <div
+                    role="menu"
+                    className="absolute left-0 mt-3 w-48 bg-navy border border-line shadow-hard-sm py-1.5 z-50"
+                  >
+                    {moreLinks.map((link) => (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className="block px-4 py-2 text-offwhite/80 hover:text-yellow hover:bg-white/[0.04] transition-colors uppercase tracking-wide"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </nav>
 
           {/* Desktop Actions */}
@@ -105,7 +163,7 @@ export default function Navbar({
                 <button
                   type="button"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="px-3 py-1.5 border border-line bg-[#0c223f] hover:border-yellow text-offwhite font-mono text-xs flex items-center gap-2.5 transition-all shadow-hard-sm cursor-pointer"
+                  className="px-3 py-1.5 border border-line bg-[#0c223f] hover:border-yellow text-offwhite font-mono text-xs flex items-center gap-2.5 transition-[border-color,background-color] duration-150 shadow-hard-sm cursor-pointer"
                 >
                   {/* Google Avatar or Icon */}
                   {user.avatar ? (
@@ -181,7 +239,7 @@ export default function Navbar({
                         <Link
                           href={`/register/success/${ticket.teamId}?token=${ticket.token}`}
                           onClick={() => setDropdownOpen(false)}
-                          className="w-full p-2.5 bg-yellow text-navy font-bold uppercase tracking-wider flex items-center gap-2 hover:opacity-95 transition-all text-[11px]"
+                          className="w-full p-2.5 bg-yellow text-navy font-bold uppercase tracking-wider flex items-center gap-2 hover:opacity-95 transition-opacity text-[11px]"
                         >
                           <QrCode className="w-4 h-4 shrink-0" />
                           <div className="truncate text-left">
@@ -195,7 +253,7 @@ export default function Navbar({
                         <Link
                           href="/register"
                           onClick={() => setDropdownOpen(false)}
-                          className="w-full p-2.5 bg-yellow text-navy font-bold uppercase tracking-wider flex items-center gap-2 hover:opacity-95 transition-all text-[11px]"
+                          className="w-full p-2.5 bg-yellow text-navy font-bold uppercase tracking-wider flex items-center gap-2 hover:opacity-95 transition-opacity text-[11px]"
                         >
                           <Ticket className="w-4 h-4 shrink-0" />
                           <span>REGISTER YOUR TEAM →</span>
@@ -229,12 +287,12 @@ export default function Navbar({
                 {registrationOpen ? (
                   <Link
                     href="/register"
-                    className="px-5 py-2.5 bg-yellow text-navy font-mono text-xs font-bold tracking-wider uppercase border border-yellow shadow-[4px_4px_0_rgba(242,239,230,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_rgba(242,239,230,0.3)] transition-all"
+                    className="px-5 py-2.5 bg-yellow text-navy font-mono text-xs font-bold tracking-wider uppercase border border-yellow shadow-[4px_4px_0_rgba(242,239,230,0.3)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_rgba(242,239,230,0.3)] transition-[transform,box-shadow] duration-150"
                   >
                     Register Now
                   </Link>
                 ) : (
-                  <span className="px-5 py-2.5 bg-line text-offwhite/40 font-mono text-xs uppercase cursor-not-allowed">
+                  <span className="px-5 py-2.5 bg-line text-offwhite/60 font-mono text-xs uppercase cursor-not-allowed">
                     Registrations Closed
                   </span>
                 )}
@@ -244,8 +302,9 @@ export default function Navbar({
 
           {/* Mobile Hamburger Button */}
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-offwhite border border-line"
+            className="md:hidden p-2 text-offwhite border border-line hover:border-yellow hover:text-yellow transition-colors"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

@@ -94,19 +94,13 @@ export default function Coordinators({
   };
 
   return (
-    <section id="coordinators" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
-      {/* Section Header Metadata */}
-      <div className="flex items-center justify-between font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-8">
-        <div>05 / EVENT COORDINATORS</div>
-        <div className="hidden sm:inline">[FACULTY DIRECTORS &amp; LEAD COORDINATORS]</div>
-      </div>
-
+    <section id="coordinators" className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
-          <h2 className="font-display text-2xl sm:text-3xl font-black text-offwhite uppercase tracking-tight">
-            FACULTY DIRECTORS &amp; LEAD COORDINATORS
+          <h2 className="font-display text-3xl sm:text-4xl font-black text-offwhite tracking-tight">
+            Faculty Directors &amp; Lead Coordinators
           </h2>
-          <p className="font-mono text-xs sm:text-sm text-offwhite/70 mt-2 max-w-2xl leading-relaxed">
+          <p className="font-mono text-xs sm:text-sm text-offwhite/75 mt-2 max-w-2xl leading-relaxed">
             Faculty chairs and student directors supervising event governance, mentor panels, challenge design, and judging integrity.
           </p>
         </div>
@@ -116,35 +110,35 @@ export default function Coordinators({
           <button
             type="button"
             onClick={() => setFilter('all')}
-            className={`px-3 py-1.5 border transition-all ${
+            className={`px-3 py-1.5 border transition-colors cursor-pointer ${
               filter === 'all'
                 ? 'bg-yellow text-navy font-bold border-yellow shadow-hard-sm'
-                : 'border-line text-offwhite/70 hover:border-yellow'
+                : 'border-line text-offwhite/80 hover:border-yellow hover:text-yellow'
             }`}
           >
-            ALL [{displayList.length}]
+            All ({displayList.length})
           </button>
           <button
             type="button"
             onClick={() => setFilter('faculty')}
-            className={`px-3 py-1.5 border transition-all ${
+            className={`px-3 py-1.5 border transition-colors cursor-pointer ${
               filter === 'faculty'
                 ? 'bg-yellow text-navy font-bold border-yellow shadow-hard-sm'
-                : 'border-line text-offwhite/70 hover:border-yellow'
+                : 'border-line text-offwhite/80 hover:border-yellow hover:text-yellow'
             }`}
           >
-            FACULTY
+            Faculty
           </button>
           <button
             type="button"
             onClick={() => setFilter('student')}
-            className={`px-3 py-1.5 border transition-all ${
+            className={`px-3 py-1.5 border transition-colors cursor-pointer ${
               filter === 'student'
                 ? 'bg-yellow text-navy font-bold border-yellow shadow-hard-sm'
-                : 'border-line text-offwhite/70 hover:border-yellow'
+                : 'border-line text-offwhite/80 hover:border-yellow hover:text-yellow'
             }`}
           >
-            STUDENT LEADS
+            Student Leads
           </button>
         </div>
       </div>
@@ -157,25 +151,20 @@ export default function Coordinators({
           return (
             <div
               key={member._id || idx}
-              className="border border-line bg-[#0c223f] hover:border-yellow shadow-hard-sm transition-all duration-150 flex flex-col justify-between p-5 relative group"
+              className="border border-line bg-[#0c223f] hover:border-yellow shadow-hard-sm transition-colors duration-150 flex flex-col justify-between p-5 relative group"
             >
-              {/* Corner Blueprint Crosshairs */}
-              <span className="absolute top-2 left-2 text-[10px] text-yellow/40 select-none group-hover:text-yellow transition-colors">+</span>
-              <span className="absolute top-2 right-2 text-[10px] text-yellow/40 select-none group-hover:text-yellow transition-colors">+</span>
-
               <div>
-                {/* Category & Status Bar */}
-                <div className="flex items-center justify-between font-mono text-[10px] pb-3 mb-4 border-b border-line">
+                {/* Role Tag */}
+                <div className="pb-3 mb-4 border-b border-line font-mono text-[10px]">
                   <span
-                    className={`px-2 py-0.5 border font-bold uppercase tracking-wider ${
+                    className={`inline-block px-2 py-0.5 border font-bold uppercase tracking-wider ${
                       isFaculty
                         ? 'border-yellow/70 bg-yellow/10 text-yellow'
-                        : 'border-line bg-navy text-offwhite/70'
+                        : 'border-line bg-navy text-offwhite/80'
                     }`}
                   >
-                    {isFaculty ? '[ FACULTY DIRECTOR ]' : '[ LEAD COORDINATOR ]'}
+                    {isFaculty ? 'Faculty Director' : 'Lead Coordinator'}
                   </span>
-                  <span className="text-offwhite/40">#0{idx + 1}</span>
                 </div>
 
                 {/* Profile Header: Avatar + Name + Role */}
@@ -186,11 +175,11 @@ export default function Coordinators({
                         src={member.photoUrl}
                         alt={member.name}
                         fill
-                        className="object-cover filter grayscale contrast-125 group-hover:grayscale-0 group-hover:contrast-100 group-hover:scale-105 transition-all duration-300 ease-in-out"
+                        className="object-cover filter grayscale contrast-125 group-hover:grayscale-0 group-hover:contrast-100 group-hover:scale-105 motion-reduce:group-hover:scale-100 transition-[filter,transform] duration-300 ease-in-out"
                         unoptimized
                       />
                     ) : (
-                      <div className="font-display font-black text-3xl text-offwhite/40 group-hover:text-yellow transition-colors select-none">
+                      <div className="font-display font-black text-3xl text-offwhite/65 group-hover:text-yellow transition-colors select-none">
                         {getInitials(member.name)}
                       </div>
                     )}
@@ -204,7 +193,7 @@ export default function Coordinators({
                       {member.role}
                     </p>
                     {member.department && (
-                      <p className="font-mono text-[11px] text-offwhite/50 mt-1 truncate">
+                      <p className="font-mono text-[11px] text-offwhite/70 mt-1 truncate">
                         {member.department}
                       </p>
                     )}
@@ -212,11 +201,11 @@ export default function Coordinators({
                 </div>
               </div>
 
-              {/* Direct Contact Details Plate */}
+              {/* Direct Contact Details */}
               <div className="mt-5 pt-3.5 border-t border-line font-mono text-xs space-y-2">
                 {member.phone && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-offwhite/40 text-[10px] uppercase">PHONE:</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-offwhite/65 text-[10px] uppercase">Phone</span>
                     <a
                       href={`tel:${member.phone.replace(/\s+/g, '')}`}
                       className="text-yellow hover:underline flex items-center gap-1.5 font-bold tracking-wider text-[11px]"
@@ -229,30 +218,30 @@ export default function Coordinators({
                 )}
 
                 {member.email && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-offwhite/40 text-[10px] uppercase">EMAIL:</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-offwhite/65 text-[10px] uppercase">Email</span>
                     <a
                       href={`mailto:${member.email}`}
-                      className="text-offwhite hover:text-yellow flex items-center gap-1.5 max-w-[170px] truncate text-[11px]"
+                      className="text-offwhite/85 hover:text-yellow flex items-center gap-1.5 max-w-[170px] truncate text-[11px]"
                       title={`Email ${member.name}`}
                     >
-                      <Mail className="w-3 h-3 text-offwhite/50 group-hover:text-yellow shrink-0" />
+                      <Mail className="w-3 h-3 text-offwhite/65 group-hover:text-yellow shrink-0" />
                       <span className="truncate">{member.email}</span>
                     </a>
                   </div>
                 )}
 
                 {member.linkedin && (
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-offwhite/40 text-[10px] uppercase">NETWORK:</span>
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <span className="text-offwhite/65 text-[10px] uppercase">Profile</span>
                     <a
                       href={normalizeUrl(member.linkedin)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-offwhite/60 hover:text-yellow flex items-center gap-1 text-[11px] transition-colors"
+                      className="text-offwhite/80 hover:text-yellow flex items-center gap-1 text-[11px] transition-colors"
                     >
-                      <Linkedin className="w-3 h-3 text-[#0077b5]" />
-                      <span>[LINKEDIN]</span>
+                      <Linkedin className="w-3 h-3 text-[#4da3d9]" />
+                      <span>LinkedIn ↗</span>
                     </a>
                   </div>
                 )}

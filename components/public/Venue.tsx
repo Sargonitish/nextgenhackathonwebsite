@@ -10,12 +10,7 @@ export default function Venue({
   mapEmbedUrl,
 }: VenueProps) {
   return (
-    <section id="venue" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
-      {/* Section Label */}
-      <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-10">
-        10 / VENUE
-      </div>
-
+    <section id="venue" className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column: Details */}
         <div className="lg:col-span-7 space-y-4">
@@ -23,7 +18,7 @@ export default function Venue({
             {name || 'MAIN AUDITORIUM & INNOVATION HUB'}
           </h2>
 
-          <p className="font-mono text-xs sm:text-sm text-offwhite/70 tracking-wider">
+          <p className="font-mono text-xs sm:text-sm text-offwhite/80 tracking-wider">
             {address || 'CAMPUS RESEARCH PARK, BLOCK 4, 3RD FLOOR'}
           </p>
 
@@ -42,21 +37,21 @@ export default function Venue({
 
         {/* Right Column: Outlined Rectangle with Center Crosshair Pin */}
         <div className="lg:col-span-5 h-64 sm:h-72 border border-line bg-white/[0.01] flex items-center justify-center relative overflow-hidden">
-          {/* Subtle blueprint grid coordinates */}
-          <div className="absolute top-3 left-3 font-mono text-[10px] text-offwhite/30">
+          {/* Blueprint grid coordinates */}
+          <div className="absolute top-3 left-3 font-mono text-[10px] text-offwhite/65">
             LAT: 12.9716° N / LON: 77.5946° E
           </div>
-          <div className="absolute bottom-3 right-3 font-mono text-[10px] text-offwhite/30">
-            [ SECTOR A-4 ]
+          <div className="absolute bottom-3 right-3 font-mono text-[10px] text-offwhite/65">
+            SECTOR A-4
           </div>
 
           {/* Center Crosshair '+' Pin */}
           <div className="flex flex-col items-center gap-2 select-none">
-            <div className="w-8 h-8 flex items-center justify-center text-yellow font-mono text-2xl font-light">
+            <div className="w-8 h-8 flex items-center justify-center text-yellow font-mono text-2xl font-light" aria-hidden="true">
               +
             </div>
-            <span className="font-mono text-[11px] text-offwhite/50 tracking-widest uppercase">
-              HACKATHON ARENA PIN
+            <span className="font-mono text-[11px] text-offwhite/75 tracking-widest uppercase">
+              Hackathon Arena Pin
             </span>
           </div>
         </div>

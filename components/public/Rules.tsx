@@ -24,26 +24,31 @@ export default function Rules({ rulesText }: RulesProps) {
     : defaultRules;
 
   return (
-    <section id="rules" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
-      {/* Section Label */}
-      <div className="font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-10">
-        04 / RULES
-      </div>
+    <section id="rules" className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+        {/* Left Sticky Column Heading */}
+        <div className="lg:col-span-4 lg:sticky lg:top-24">
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-offwhite tracking-tight">
+            House Rules
+          </h2>
+          <p className="mt-3 font-mono text-xs sm:text-sm text-offwhite/70 leading-relaxed max-w-xs">
+            Strict expectations for original work, fair play, and runnable submissions.
+          </p>
+        </div>
 
-      <h2 className="sr-only">Hackathon Rules & Regulations</h2>
-
-      {/* Compact Numbered List with generous left padding */}
-      <div className="max-w-3xl space-y-6 pl-0 sm:pl-6">
-        {rulesList.slice(0, 10).map((rule, idx) => (
-          <div key={idx} className="flex items-start gap-4 sm:gap-6 font-mono text-xs sm:text-sm">
-            <span className="text-yellow font-bold shrink-0 w-6">
-              {String(idx + 1).padStart(2, '0')}
-            </span>
-            <p className="text-offwhite/80 leading-relaxed">
-              {rule}
-            </p>
-          </div>
-        ))}
+        {/* Right Column: Ruled List */}
+        <div className="lg:col-span-8 border-t border-b border-line divide-y divide-line">
+          {rulesList.slice(0, 10).map((rule, idx) => (
+            <div key={idx} className="py-5 flex items-start gap-4 sm:gap-6 font-mono text-xs sm:text-sm">
+              <span className="text-yellow font-bold shrink-0 w-6">
+                {String(idx + 1).padStart(2, '0')}
+              </span>
+              <p className="text-offwhite/85 leading-relaxed">
+                {rule}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

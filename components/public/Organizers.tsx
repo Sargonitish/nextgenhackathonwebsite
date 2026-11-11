@@ -118,19 +118,13 @@ export default function Organizers() {
       : displayList.filter((o) => (o.duty || 'other') === activeFilter);
 
   return (
-    <section id="organizers" className="py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
-      {/* Blueprint Header */}
-      <div className="flex items-center justify-between font-mono text-xs text-offwhite/50 uppercase tracking-widest mb-8">
-        <div>06 / ORGANIZING COMMITTEE &amp; OPERATIONS</div>
-        <div className="hidden sm:inline">[DESK LEADS // OPERATIONS CREW]</div>
-      </div>
-
+    <section id="organizers" className="py-16 sm:py-20 max-w-[1280px] mx-auto px-4 sm:px-8 border-t border-line relative z-10">
       <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="font-display text-2xl sm:text-3xl font-black text-offwhite uppercase tracking-tight">
-            OPERATIONS &amp; DESK LEADS
+          <h2 className="font-display text-3xl sm:text-4xl font-black text-offwhite tracking-tight">
+            Operations &amp; Desk Leads
           </h2>
-          <p className="font-mono text-xs sm:text-sm text-offwhite/70 mt-2 max-w-2xl leading-relaxed">
+          <p className="font-mono text-xs sm:text-sm text-offwhite/75 mt-2 max-w-2xl leading-relaxed">
             On-site committee leads and student organizers managing participant help desks, lab hardware, logistics, and round-the-clock hospitality.
           </p>
         </div>
@@ -140,23 +134,23 @@ export default function Organizers() {
           <button
             type="button"
             onClick={() => setActiveFilter('all')}
-            className={`px-3 py-1.5 border transition-all uppercase tracking-wider ${
+            className={`px-3 py-1.5 border transition-colors uppercase tracking-wider cursor-pointer ${
               activeFilter === 'all'
                 ? 'bg-yellow text-navy border-yellow font-bold shadow-[2px_2px_0_rgba(242,239,230,0.3)]'
-                : 'border-line text-offwhite/70 hover:text-yellow hover:border-yellow/50 bg-navy'
+                : 'border-line text-offwhite/80 hover:text-yellow hover:border-yellow/50 bg-navy'
             }`}
           >
-            ALL DESKS ({displayList.length})
+            All Desks ({displayList.length})
           </button>
           {availableDuties.map((dutyKey) => (
             <button
               key={dutyKey}
               type="button"
               onClick={() => setActiveFilter(dutyKey)}
-              className={`px-3 py-1.5 border transition-all uppercase tracking-wider ${
+              className={`px-3 py-1.5 border transition-colors uppercase tracking-wider cursor-pointer ${
                 activeFilter === dutyKey
                   ? 'bg-yellow text-navy border-yellow font-bold shadow-[2px_2px_0_rgba(242,239,230,0.3)]'
-                  : 'border-line text-offwhite/70 hover:text-yellow hover:border-yellow/50 bg-navy'
+                  : 'border-line text-offwhite/80 hover:text-yellow hover:border-yellow/50 bg-navy'
               }`}
             >
               {DUTY_LABELS[dutyKey] || dutyKey}
@@ -175,24 +169,16 @@ export default function Organizers() {
               key={org._id || `org-${index}`}
               className="border border-line bg-navy/80 p-5 flex flex-col justify-between relative group hover:border-yellow transition-colors shadow-hard"
             >
-              {/* Corner Blueprint Accent */}
-              <span className="absolute top-2 right-2 text-[10px] text-yellow/40 group-hover:text-yellow font-mono select-none">
-                +
-              </span>
-
-              {/* Top: Duty Tag & Role Stamp */}
+              {/* Top: Duty Tag */}
               <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="mb-3">
                   <span className="inline-block px-2 py-0.5 border border-yellow/40 bg-yellow/10 font-mono text-[9px] uppercase tracking-wider text-yellow font-bold truncate">
-                    [ {dutyLabel} ]
-                  </span>
-                  <span className="font-mono text-[9px] text-offwhite/40 tracking-wider shrink-0">
-                    {org.type ? `[ ${org.type.toUpperCase()} ]` : `#${String(index + 1).padStart(2, '0')}`}
+                    {dutyLabel}
                   </span>
                 </div>
 
                 {/* Name & Academic Credentials */}
-                <h3 className="font-display font-black text-lg text-offwhite uppercase tracking-tight group-hover:text-yellow transition-colors">
+                <h3 className="font-display font-black text-lg text-offwhite tracking-tight group-hover:text-yellow transition-colors">
                   {org.name}
                 </h3>
 
@@ -203,12 +189,12 @@ export default function Organizers() {
                 )}
 
                 {org.department && (
-                  <p className="font-mono text-[11px] text-offwhite/70 mt-1 leading-snug">
+                  <p className="font-mono text-[11px] text-offwhite/80 mt-1 leading-snug">
                     {org.department}
                   </p>
                 )}
                 {org.college && (
-                  <p className="font-mono text-[10px] text-offwhite/40 mt-0.5 leading-snug">
+                  <p className="font-mono text-[10px] text-offwhite/65 mt-0.5 leading-snug">
                     {org.college}
                   </p>
                 )}
@@ -219,7 +205,7 @@ export default function Organizers() {
                 {org.phone && (
                   <a
                     href={`tel:${org.phone.replace(/\s+/g, '')}`}
-                    className="flex items-center gap-2 text-offwhite/80 hover:text-yellow transition-colors truncate"
+                    className="flex items-center gap-2 text-offwhite/85 hover:text-yellow transition-colors truncate"
                     title={`Call ${org.name}`}
                   >
                     <Phone className="w-3.5 h-3.5 text-yellow shrink-0" />
@@ -229,7 +215,7 @@ export default function Organizers() {
                 {org.email && (
                   <a
                     href={`mailto:${org.email}`}
-                    className="flex items-center gap-2 text-offwhite/80 hover:text-yellow transition-colors truncate"
+                    className="flex items-center gap-2 text-offwhite/85 hover:text-yellow transition-colors truncate"
                     title={`Email ${org.name}`}
                   >
                     <Mail className="w-3.5 h-3.5 text-yellow shrink-0" />
