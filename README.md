@@ -1,97 +1,104 @@
 # ⚡ HackX — Full-Stack College Hackathon Operations Engine
 
-A complete, production-ready, reusable College Hackathon website and operations platform built with **Next.js 14 (App Router)**, **TypeScript**, **TailwindCSS**, and **MongoDB (Mongoose 8)**.
+A production-ready, reusable **College Hackathon Website, Event CMS & Operations Platform** built with **Next.js 14 (App Router)**, **TypeScript 5**, **Tailwind CSS**, **GSAP 3 + Framer Motion**, and **MongoDB (Mongoose 8)**.
 
-Engineered to operate on a **100% Zero-Cost Serverless Stack**:
+Engineered with a high-craft **Architectural Blueprint UI** (`#0B1F3A` Navy, `#FFD23F` Drafting Yellow, `#F2EFE6` Off-White, sharp `0px` edges, `48px` graph-paper canvas, and hard offset block shadows) and built to run on a **100% Zero-Cost Serverless Stack**:
 - **Hosting**: Vercel Hobby Tier
-- **Database**: MongoDB Atlas M0 (512MB free tier)
-- **Asset Storage**: Cloudinary Free Tier (images & logos)
-- **Authentication**: Native Jose Edge JWT sessions with Otplib TOTP 2FA (No external paid auth services needed)
+- **Database**: MongoDB Atlas M0 (512 MB free tier)
+- **Asset Storage**: Cloudinary Free Tier (sponsor logos, coordinator/organizer portraits, gallery images)
+- **Authentication**: Native Edge JWT sessions (`jose`) + RFC 6238 TOTP 2FA (`otplib`) + Google identity verification for students
 
 ---
 
 ## 🌟 Key Capabilities
 
-1. **Multi-Edition CMS Engine**:
-   - Create, edit, and clone hackathon editions (`HackX 2026`, `HackX 2027`, etc.) with zero hardcoding.
-   - 1-click cloning copies branding, tracks, prizes, coordinators, schedule, and FAQs with fresh blank registration counts.
-   - Enforces a single active edition invariant across the entire system.
+### 1. Multi-Edition CMS & Dynamic Landing Page (`/`)
+- **Zero-Hardcode Editions**: Create, edit, clone, and activate yearly editions (`HackX 2026`, `HackX 2027`, etc.) from `/admin/editions` while enforcing a single active edition invariant.
+- **Section Visibility Controls**: Toggle landing sections (`Hero`, `About`, `Tracks`, `Schedule`, `Prizes`, `Rules`, `Coordinators`, `Organizers`, `Sponsors`, `Gallery`, `FAQs`, `Venue`, `Footer`) dynamically from Admin Branding.
+- **Split People Directories**:
+  - **Coordinators (`Section 05`)**: Faculty directors & lead student coordinators with category filters (`All`, `Faculty`, `Student`) and monochrome-to-color portrait hover transitions.
+  - **Operations & Desk Leads (`Section 06`)**: Live API-backed organizer roster (`/api/public/organizers`) filterable by duty assignment.
+- **Field Moments Gallery & Sponsor Showcase**: Interactive keyboard-accessible photo contact sheet with Escape-dismissible lightbox modal and configurable sponsor tier grid.
 
-2. **Student Registration & QR Passports**:
-   - Atomic sequential Team IDs (`HACKX-0001`, `HACKX-0002`) guaranteed by MongoDB transactional counters.
-   - Dynamic team members (1 to 4) with college, department, and leader contact details.
-   - Secure verification token embedded in downloadable QR codes (`hx_chk_...`).
+### 2. Blueprint Motion, Scroll Choreography & Accessibility
+- **Central SSR-Safe GSAP Registry (`lib/gsap.ts`)**: Client-only modular registration for `useGSAP`, `ScrollTrigger`, `ScrollToPlugin`, `SplitText`, `ScrambleTextPlugin`, `Flip`, and `DrawSVGPlugin` (omits `ScrollSmoother` so native sticky headings remain intact).
+- **2px Top Scroll Progress Gauge (`Navbar.tsx` + `globals.css`)**: Driven natively by CSS `animation-timeline: scroll(root block)` on supported browsers with a GSAP `ScrollTrigger` fallback and smooth `ScrollToPlugin` anchor scrolling (`Sections ▾` dropdown menu + mobile drawer).
+- **Hero & Manifesto Choreography**:
+  - `Hero.tsx`: `ScrambleTextPlugin` spec readout (with hover replay), `SplitText` character entrance across solid title + `.text-outline` year, dimension caliper scaling, and staggered telemetry feed.
+  - `About.tsx`: Word-by-word scrubbed `SplitText` headline illumination paired with a `2×2` CAD Spec Bento grid (`DURATION`, `DOMAINS`, `PRIZE POOL`, `CAPACITY`).
+- **Scroll-Drawn Runbook & Pinned-Free Rhythm**:
+  - `Schedule.tsx`: Continuous scrubbed yellow vertical timeline spine illuminating milestone nodes sequentially on scroll.
+  - `Prizes.tsx`, `Venue.tsx`, `Coordinators.tsx`, & `Organizers.tsx`: Staggered podium reveal, `DrawSVGPlugin` CAD arena targeting reticle, and GSAP `Flip` filter layout transitions with `ScrollTrigger.refresh()` sync on async fetches, filters, and `Faq.tsx` accordion toggles.
+- **Interactive UI Micro-Components**: `ScrambleText` (track cards), morphing `DynamicButton` (registration submit state transitions), `HoldToConfirmButton` (`1100ms` destructive team delete hold in Admin), magnetic drag-and-drop `ImageUpload`, and dynamic gradient `ScrollFadeList`.
+- **WCAG & Reduced-Motion Support**: Visible `Pause` / `Play` control on `AnnouncementTicker.tsx` (WCAG 2.2.2), accessible focus outlines, `overflow-x: clip` layout hygiene, and full `prefers-reduced-motion` static fallbacks.
 
-3. **Live Synchronized Timer & Projector Mode**:
-   - Pure server-offset client calculations (`lib/timer.ts`) drift-free across thousands of connected devices.
-   - `/live` full-screen projector display for event hall projectors with a giant animated 3D digit countdown and live scrolling announcement ticker.
-   - Controls to start, pause, resume, extend duration, or schedule future countdowns.
+### 3. Student Registration & Thermal Receipt Printer QR Pass (`/register`)
+- **Google Identity Verification & Lookup**: Google sign-in token verification (`/api/auth/google/verify`) and participant lookup at `/find-registration`.
+- **Dynamic Team Builder**: Configurable team size constraints (min/max members) capturing member college, department, and **Register Number**, backed by transactional sequential Team IDs (`HACKX-0001`, etc.).
+- **Hardware Receipt Printer Ticket (`/register/success/[teamId]`)**: Stepped 20-keyframe thermal receipt feed over custom grain & paper SVG textures (`public/textures/plastic-noise.svg`, `public/textures/receipt-paper.svg`) with high-contrast QR badge (`hx_chk_...`), member roster, checksum barcode, `Reprint` trigger, PNG badge export, and print support.
 
-4. **Camera QR Check-In Desk**:
-   - Dedicated `/checkin` camera scanner using `html5-qrcode` with rear/front camera flip.
-   - Instant duplicate scan warnings and sound/haptic feedback.
-   - Interactive member-by-member attendance checklist and physical badge tracker.
-
-5. **Two-Tier Role-Based Access Control (RBAC)**:
-   - **Root Administrator**:
-     - Secured with bcrypt master password + Time-based One-Time Password (TOTP 2FA).
-     - Full CMS control, edition cloning, organizer access review, and security audit logs.
-   - **Organizer Staff**:
-     - Public sign-up workflow (`/organizer/signup`) with duty preferences and optional access passcode.
-     - Admin approval pipeline (`/admin/organizers`) with duty assignment and granular permissions (`checkin`, `viewTeams`, `viewContacts`).
-     - **Privacy Data-Masking**: Phone numbers are automatically masked (`98******10`) and student emails omitted unless explicitly authorized.
-     - **Instant Session Revocation**: Any suspension or password reset increments `sessionVersion`, immediately kicking the organizer out from all active sessions.
+### 4. Live Timer, Camera QR Check-In Desk & Two-Tier RBAC
+- **Synchronized Auditorium Display (`/live`)**: Pure server-offset client countdown (`lib/timer.ts`), giant 3D flip clock (`FlipCountdown.tsx`), and live broadcast marquee (`AnnouncementTicker.tsx`).
+- **Check-In Scanner (`/checkin`)**: Dedicated `html5-qrcode` camera scanner (`CheckinScanner.tsx`) with front/rear camera switching, member-by-member attendance check-in, and role-aware exit routing back to `/organizer` or `/admin`.
+- **Two-Tier RBAC**:
+  - **Root Admin (`/admin/*`)**: Master `bcryptjs` password + 6-digit `otplib` TOTP 2FA, full event CMS, CSV team export, organizer approval pipeline, announcements, and login security logs.
+  - **Organizer Staff (`/organizer/*`)**: Self-signup, admin-managed duty permissions (`checkin`, `viewTeams`, `viewContacts`), automatic phone/email masking (`lib/permissions.ts`), and instant `sessionVersion` session revocation.
 
 ---
 
 ## 🛠️ Architecture & Tech Stack
 
-- **Framework**: Next.js 14.2 (App Router, Server Actions, Route Handlers)
-- **Language**: TypeScript 5 (Strict Mode enabled)
-- **Styling**: Tailwind CSS with custom cyberpunk/terminal theme and glassmorphism
-- **Database**: MongoDB via Mongoose 8 (cached global connection for serverless cold-start efficiency)
-- **Security & Cryptography**:
-  - `jose` for Edge-compatible JWT verification in Next.js Middleware
-  - `bcryptjs` for secure salted password hashing
-  - `otplib` & `qrcode` for RFC 6238 TOTP two-factor authentication
-  - Node.js `crypto.timingSafeEqual` for secret and token comparisons
-- **Drag-and-Drop CMS**: `@dnd-kit` for drag-to-reorder list management
+- **Framework**: Next.js 14.2 (`^14.2.20` App Router, Server Components, Route Handlers)
+- **Language**: TypeScript 5 (`^5.7.2`, strict mode)
+- **Styling & Textures**: Tailwind CSS (`^3.4.16`) with Architectural Blueprint palette + SVG grain textures (`public/textures/`)
+- **Animation Engines**:
+  - `gsap` (`^3.15.1`) & `@gsap/react` (`^2.1.2`) for landing choreography and scroll progress
+  - `framer-motion` (`^11.15.0`) for stateful receipt printer hardware, morphing buttons, and drag-and-drop spring feedback
+- **Database & Validation**: MongoDB via `mongoose` (`^8.8.4`) + `zod` (`^3.24.1`) + `react-hook-form` (`^7.54.0`)
+- **Security & Auth**: `jose` Edge JWTs, `bcryptjs`, `otplib`, `qrcode`, Node `crypto.timingSafeEqual`
+- **Admin Utilities**: `@dnd-kit` drag-to-reorder editors, `recharts` analytics, `sonner` toasts, `nodemailer` SMTP alerts
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 ├── app/
-│   ├── (public)/                 # Landing page, details, matrix rain, countdown
-│   ├── live/                     # Projector display mode for auditorium screens
-│   ├── register/                 # Multi-step student registration & QR download
-│   ├── checkin/                  # Camera QR scanner & manual check-in desk
-│   ├── find-registration/        # Participant registration lookup
-│   ├── organizer/                # Organizer login, signup & mobile ops portal
-│   │   ├── (portal)/             # Organizer dashboard, roster & profile
-│   │   ├── login/
-│   │   └── signup/
-│   ├── admin/                    # Master admin root terminal
-│   │   ├── (panel)/              # CMS, timer, teams, organizers, security
-│   │   ├── login/                # Password + 6-digit TOTP terminal
-│   │   └── setup/                # 1-time root admin enrollment (auto-locks)
-│   └── api/                      # REST endpoints for public, staff, and admin
+│   ├── page.tsx                  # SSR dynamic public landing page (13 configurable sections)
+│   ├── globals.css               # Blueprint CSS variables, reduced-motion rules, native scroll progress
+│   ├── live/                     # Auditorium projector countdown & broadcast display
+│   ├── register/                 # Student registration & /success/[teamId] Thermal Receipt Printer pass
+│   ├── checkin/                  # Camera QR scanner & manual desk check-in
+│   ├── find-registration/        # Participant Team ID / email pass lookup
+│   ├── organizer/                # Organizer login, signup, dashboard, teams & profile
+│   ├── admin/                    # Master admin portal (CMS, timer, teams, organizers, security, setup)
+│   └── api/                      # Public, Auth, Staff Check-In, Organizer & Admin REST endpoints
 ├── components/
-│   ├── admin/                    # CMS editors, image uploaders, list reordering
-│   ├── public/                   # Hero, MatrixBackground, FlipCountdown, Navbar
-│   └── shared/                   # CheckinScanner, badges, modals
+│   ├── admin/                    # Drag-and-drop ImageUpload & ListEditor
+│   ├── public/                   # Navbar, Hero, About, Tracks, Schedule, Prizes, Rules,
+│   │                             # Coordinators, Organizers, Sponsors, Gallery, Faq, Venue, Footer,
+│   │                             # AnnouncementTicker, BlueprintBackground, CustomCursor, FlipCountdown, GoogleSignInButton
+│   └── shared/                   # ReceiptPrinter, DynamicButton, HoldToConfirmButton,
+│                                 # ScrambleText, ScrollFadeList, CheckinScanner, withSuspense
+├── helpers/
+│   └── classname-helper.ts       # clsx + tailwind-merge (cn helper)
 ├── lib/
-│   ├── activeEvent.ts            # Active edition cache & resolver
-│   ├── auth.ts                   # Jose JWT, bcrypt, pre_auth & setup tokens
-│   ├── cloudinary.ts             # Direct buffer upload to Cloudinary CDN
+│   ├── gsap.ts                   # SSR-safe GSAP plugin registry & prefersReducedMotion() helper
+│   ├── activeEvent.ts            # Active edition resolver
+│   ├── auth.ts                   # Jose JWT, bcrypt & TOTP pre-auth/setup tokens
+│   ├── cloudinary.ts             # Cloudinary CDN upload integration
+│   ├── compressImage.ts          # Client-side image compression before upload
+│   ├── csv.ts                    # Admin team CSV export helpers
 │   ├── db.ts                     # Cached global Mongoose connection
-│   ├── mailer.ts                 # Notification dispatch (optional SMTP)
-│   ├── permissions.ts            # Organizer data masking (maskPhone, toOrganizerTeamView)
-│   ├── rateLimit.ts              # In-memory sliding window rate limiter
-│   ├── timer.ts                  # Pure drift-free countdown math
-│   └── totp.ts                   # Authenticator QR & RFC 6238 TOTP verification
-├── models/                       # Mongoose schemas (Admin, Organizer, Event, Team, Counter, Announcement, LoginLog)
+│   ├── mailer.ts                 # Optional SMTP admin alerts
+│   ├── permissions.ts            # Organizer RBAC & contact masking
+│   ├── rateLimit.ts              # In-memory sliding-window rate limiter
+│   ├── timer.ts                  # Server-offset drift-free countdown math
+│   ├── totp.ts                   # RFC 6238 authenticator setup & verification
+│   └── validators.ts             # Shared Zod request schemas
+├── models/                       # Admin, Announcement, Counter, Event, LoginLog, Organizer, Team
+├── public/
+│   └── textures/                 # plastic-noise.svg & receipt-paper.svg
 └── scripts/
     └── seed.ts                   # Demo dataset generator (HackX 2026)
 ```
@@ -101,51 +108,52 @@ Engineered to operate on a **100% Zero-Cost Serverless Stack**:
 ## 🚀 Getting Started
 
 ### 1. Prerequisites
-- Node.js 18+ (LTS recommended)
+- Node.js 18+ (LTS recommended) and `pnpm` (`pnpm-lock.yaml` / `pnpm-workspace.yaml` included)
 - MongoDB Connection String (Atlas M0 Free Tier or local MongoDB)
 - Cloudinary Account (Free tier cloud name, API key & API secret)
 
-### 2. Environment Setup
-Copy the example environment file:
+### 2. Install Dependencies
+```bash
+pnpm install
+```
+
+### 3. Environment Setup
+Copy `.env.example` to `.env.local`:
 ```bash
 cp .env.example .env.local
 ```
 
-Configure your `.env.local`:
+Configure `.env.local`:
 ```env
-# MongoDB Connection
 MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/hackathon?retryWrites=true&w=majority
-
-# JWT Session Secret (Random 32+ character string)
-JWT_SECRET=super-secret-key-change-this-in-production-min-32-chars
-
-# Site URL
+JWT_SECRET=change-me-to-a-long-random-string-min-32-chars
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
-# Cloudinary (Free tier)
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
-# Optional: Email Notifications (e.g., Gmail App Password or Resend)
+# Optional: SMTP notification alerts for organizer requests
 SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
+SMTP_PORT=465
 SMTP_USER=your_email@gmail.com
 SMTP_PASS=your_app_password
-NOTIFICATION_EMAIL=admin@college.edu
+ADMIN_NOTIFY_EMAIL=admin@college.edu
 ```
 
-### 3. Seed Demo Data
-To immediately populate the database with a fully configured hackathon edition (`HackX 2026`), tracks, prizes, schedule, coordinators, and FAQs:
+### 4. Seed Demo Data
+Populate MongoDB with a complete `HackX 2026` edition (tracks, prizes, schedule, coordinators, FAQs):
 ```bash
-npm run seed
+pnpm run seed
 ```
 
-### 4. Start Development Server
+### 5. Development & Production Commands
 ```bash
-npm run dev
+pnpm run dev      # Start Next.js dev server at http://localhost:3000
+pnpm run build    # Compile production build & static/dynamic routes
+pnpm run start    # Serve production build locally
+pnpm run lint     # Run Next.js ESLint checks
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
@@ -153,55 +161,30 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Step 1: Initial Enrollment
 1. Navigate to [http://localhost:3000/admin/setup](http://localhost:3000/admin/setup).
-2. Choose your root administrator username and a strong master password.
-3. Open your Authenticator app (**Google Authenticator**, **Aegis**, or **1Password**) and scan the displayed QR code.
-4. Enter the 6-digit TOTP code generated by the app to verify and lock enrollment.
-> **Note**: Once an admin document is written to the database, `/admin/setup` permanently disables itself and redirects to `/admin/login`.
+2. Choose your root administrator username and master password.
+3. Scan the Authenticator QR code (**Google Authenticator**, **Aegis**, or **1Password**).
+4. Enter the 6-digit TOTP code to verify and lock enrollment.
+> **Note**: Once an admin document exists in MongoDB, `/admin/setup` permanently locks and redirects to `/admin/login`.
 
 ### Step 2: Logging into Admin Panel
 1. Navigate to [http://localhost:3000/admin/login](http://localhost:3000/admin/login).
-2. Enter your master username and password.
-3. On verification, enter the 6-digit TOTP code.
-4. You are granted an encrypted 8-hour HTTP-only session cookie.
+2. Enter master username, password, and 6-digit TOTP code for an 8-hour HTTP-only session.
 
 ---
 
 ## 🔄 Multi-Edition Yearly Lifecycle Guide
 
-When preparing for next year's hackathon:
-1. Go to **Admin Panel &rarr; Editions** (`/admin/editions`).
-2. Click **Clone Edition** next to `HackX 2026`.
-3. Provide the new name (e.g. `HackX 2027`) and slug (`hackx-2027`).
-4. The system copies all tracks, sponsors, coordinators, rules, and FAQs.
-5. Click **Activate** on the new edition.
-6. The entire public landing page, registration form, and desk scanner instantly transition to `HackX 2027` without modifying a single line of code!
+1. Open **Admin Panel → Editions** (`/admin/editions`).
+2. Click **Clone Edition** next to `HackX 2026` and enter the new name/slug (e.g. `HackX 2027`).
+3. Click **Activate** on the cloned edition—the public landing page, Thermal Receipt Printer pass, and `/checkin` desk immediately switch over with clean registration counters.
 
 ---
 
 ## ☁️ Zero-Cost Production Deployment (Vercel & Atlas)
 
-### 1. MongoDB Atlas Setup
-1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (M0 Sandbox).
-2. Under **Network Access**, add IP address `0.0.0.0/0` (Allow access from anywhere, required for Vercel Serverless Functions).
-3. Under **Database Access**, create a user with read/write privileges.
-4. Copy the connection string into your environment variables.
-
-### 2. Cloudinary Setup
-1. Sign up for a free [Cloudinary](https://cloudinary.com) account.
-2. In the dashboard, copy your `Cloud Name`, `API Key`, and `API Secret`.
-
-### 3. Deploy to Vercel
-1. Push your repository to GitHub or GitLab.
-2. Import the repository into [Vercel](https://vercel.com).
-3. Add the environment variables from your `.env.local` in the Vercel project settings:
-   - `MONGODB_URI`
-   - `JWT_SECRET`
-   - `NEXT_PUBLIC_SITE_URL` (set to your Vercel deployment URL, e.g. `https://hackx.vercel.app`)
-   - `CLOUDINARY_CLOUD_NAME`
-   - `CLOUDINARY_API_KEY`
-   - `CLOUDINARY_API_SECRET`
-4. Click **Deploy**. Vercel will automatically build and deploy the Next.js App Router application.
-5. Once deployed, visit `https://your-domain.vercel.app/admin/setup` to enroll your root administrator.
+1. **MongoDB Atlas**: Create an M0 Sandbox cluster, configure Network Access (`0.0.0.0/0` for Vercel serverless), and create a database user.
+2. **Cloudinary**: Copy your `Cloud Name`, `API Key`, and `API Secret`.
+3. **Vercel**: Import the GitHub repository, configure all environment variables from `.env.local` (setting `NEXT_PUBLIC_SITE_URL` to your deployed URL), deploy, and visit `https://your-domain.vercel.app/admin/setup` for initial enrollment.
 
 ---
 
