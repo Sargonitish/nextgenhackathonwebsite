@@ -190,4 +190,4 @@ pnpm run lint     # Run Next.js ESLint checks
 
 ## 📄 License
 MIT License. Built for collegiate student hackathons and developer festivals.
-created by Nitish-fro the welfare of students
+created by Nitish-fro the welfare of students-mainted by me
