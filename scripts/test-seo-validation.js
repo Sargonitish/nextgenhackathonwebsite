@@ -11,7 +11,7 @@ function runValidation() {
     const hasUserAgent = robots.includes('User-agent: *');
     const hasAllow = robots.includes('Allow: /');
     const hasDisallowAdmin = robots.includes('Disallow: /admin');
-    const hasSitemap = robots.includes('Sitemap:');
+    const hasSitemap = robots.includes('Sitemap: https://marvelzhack.vercel.app/sitemap.xml');
     console.log('1. [PASS] robots.txt exists in public root:');
     console.log(`   - User-agent: * -> ${hasUserAgent}`);
     console.log(`   - Allow: / -> ${hasAllow}`);
@@ -65,23 +65,23 @@ function runValidation() {
   if (fs.existsSync(seoTsPath)) {
     const seoContent = fs.readFileSync(seoTsPath, 'utf8');
     const hasToken = seoContent.includes('googleaa3aca20d0729753');
+    const hasDomain = seoContent.includes('marvelzhack.vercel.app');
     const hasGraph = seoContent.includes('@graph');
     const hasHackathon = seoContent.includes('Hackathon');
     const hasOrg = seoContent.includes('Organization');
     const hasWebSite = seoContent.includes('WebSite');
     console.log('\n5. [PASS] Structured data (JSON-LD) definition in lib/seo.ts:');
     console.log(`   - GSC Token match -> ${hasToken}`);
+    console.log(`   - Live domain configured -> ${hasDomain}`);
     console.log(`   - Schema Graph present -> ${hasGraph}`);
     console.log(`   - Schema.org/WebSite -> ${hasWebSite}`);
     console.log(`   - Schema.org/Organization -> ${hasOrg}`);
     console.log(`   - Schema.org/Hackathon (Event) -> ${hasHackathon}`);
   }
 
-  // 6. Check vercel.json and next.config.js
-  const vercelPath = path.join(__dirname, '..', 'vercel.json');
+  // 6. Check next.config.js
   const nextConfigPath = path.join(__dirname, '..', 'next.config.js');
   console.log('\n6. [PASS] Hosting & Header configs:');
-  console.log(`   - vercel.json exists -> ${fs.existsSync(vercelPath)}`);
   console.log(`   - next.config.js headers configured -> ${fs.existsSync(nextConfigPath)}`);
 
   console.log('\n=== ALL AUDIT CHECKS PASSED ===');

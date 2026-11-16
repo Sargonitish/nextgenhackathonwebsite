@@ -8,4 +8,4 @@ Disallow: /organizer
 Disallow: /checkin
 Disallow: /register/success/
 
-Sitemap: https://hackx.college.edu/sitemap.xml
+Sitemap: https://marvelzhack.vercel.app/sitemap.xml
