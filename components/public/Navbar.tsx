@@ -275,7 +275,7 @@ export default function Navbar({
                         {user.avatar && (
                           <img
                             src={user.avatar}
-                            alt=""
+                            alt={user.name || 'User profile'}
                             className="w-7 h-7 rounded-full border border-yellow"
                           />
                         )}
@@ -401,7 +401,7 @@ export default function Navbar({
                   {user.avatar ? (
                     <img
                       src={user.avatar}
-                      alt=""
+                      alt={user.name || 'User profile'}
                       className="w-8 h-8 rounded-full border border-yellow"
                     />
                   ) : (

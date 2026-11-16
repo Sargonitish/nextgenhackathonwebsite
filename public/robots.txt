@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /admin
+Disallow: /organizer/
+Disallow: /organizer
+Disallow: /checkin
+Disallow: /register/success/
+
+Sitemap: https://hackx.college.edu/sitemap.xml
