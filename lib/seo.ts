@@ -1,5 +1,11 @@
 export function getSiteUrl(): string {
-  const envUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://marvelzhack.vercel.app';
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!envUrl || envUrl.includes('localhost')) {
+    if (process.env.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL}`;
+    }
+    return 'https://marvelzhack.vercel.app';
+  }
   return envUrl.replace(/\/+$/, '');
 }
 
