@@ -1,26 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://marvelzhack.vercel.app/</loc>
-    <lastmod>2026-11-16T22:30:00+05:30</lastmod>
+    <lastmod>2026-11-17T21:30:00+05:30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://marvelzhack.vercel.app/og-image.png</image:loc>
+      <image:title>HACKX 2026 — 24-Hour Autonomous Agents Hackathon</image:title>
+      <image:caption>HACKX 2026 collegiate hackathon banner and blueprint specification in Chennai.</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://marvelzhack.vercel.app/register</loc>
-    <lastmod>2026-11-16T22:30:00+05:30</lastmod>
+    <lastmod>2026-11-17T21:30:00+05:30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://marvelzhack.vercel.app/og-image.png</image:loc>
+      <image:title>Register for HACKX 2026 — Team Registration Pass</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://marvelzhack.vercel.app/find-registration</loc>
-    <lastmod>2026-11-16T22:30:00+05:30</lastmod>
+    <lastmod>2026-11-17T21:30:00+05:30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://marvelzhack.vercel.app/live</loc>
-    <lastmod>2026-11-16T22:30:00+05:30</lastmod>
+    <lastmod>2026-11-17T21:30:00+05:30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

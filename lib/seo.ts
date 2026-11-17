@@ -32,6 +32,39 @@ export const DEFAULT_SEO = {
   ogImage: '/og-image.png',
 };
 
+export const DEFAULT_FAQS = [
+  {
+    question: 'Who is eligible to participate in HACKX 2026?',
+    answer:
+      'Any student currently enrolled in an undergraduate or postgraduate program at any recognized university or college is eligible. Inter-college teams are welcome.',
+  },
+  {
+    question: 'What is the required team size?',
+    answer:
+      'Teams must consist of 2 to 4 members. You must declare a Team Leader during registration.',
+  },
+  {
+    question: 'Is there any registration fee for HACKX 2026?',
+    answer:
+      'No! Registration and participation in HACKX 2026 are completely free. Food, midnight snacks, coffee, and hacker swag are covered for all shortlisted teams.',
+  },
+  {
+    question: 'What should we build during the 24 hours?',
+    answer:
+      'Teams build autonomous AI agents, multi-agent workflows, intelligent developer tools, or automated systems addressing real-world problem statements.',
+  },
+  {
+    question: 'How does team check-in work on event day?',
+    answer:
+      'Upon completing online registration, your team leader receives a unique Team ID and secure QR code pass. Show this QR pass at the campus registration desk upon arrival.',
+  },
+  {
+    question: 'Where is HACKX 2026 taking place?',
+    answer:
+      'HACKX 2026 is hosted on campus in Chennai, Tamil Nadu, India, featuring high-speed connectivity, 24-hour power backup, and hardware labs.',
+  },
+];
+
 export interface EventDataForSeo {
   name?: string;
   content?: {
@@ -58,6 +91,15 @@ export interface EventDataForSeo {
     registrationOpen?: boolean;
     registrationDeadline?: string | Date | null;
   };
+  faqs?: Array<{
+    question: string;
+    answer: string;
+  }>;
+  sponsors?: Array<{
+    name: string;
+    logoUrl?: string;
+    website?: string;
+  }>;
 }
 
 export function generateEventJsonLd(event: EventDataForSeo | null) {
@@ -84,6 +126,29 @@ export function generateEventJsonLd(event: EventDataForSeo | null) {
   const sameAsLinks = Object.values(socials).filter(
     (url): url is string => typeof url === 'string' && url.startsWith('http')
   );
+
+  const rawFaqs = event?.faqs && event.faqs.length > 0 ? event.faqs : DEFAULT_FAQS;
+  const faqNode = {
+    '@type': 'FAQPage',
+    '@id': `${siteUrl}/#faq`,
+    mainEntity: rawFaqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  };
+
+  const sponsorNodes = (event?.sponsors || [])
+    .filter((s) => s && s.name)
+    .map((s) => ({
+      '@type': 'Organization',
+      name: s.name,
+      ...(s.website ? { url: s.website } : {}),
+      ...(s.logoUrl ? { logo: s.logoUrl } : {}),
+    }));
 
   return {
     '@context': 'https://schema.org',
@@ -153,15 +218,32 @@ export function generateEventJsonLd(event: EventDataForSeo | null) {
           url: `${siteUrl}/register`,
           price: '0',
           priceCurrency: 'INR',
-          availability: event?.settings?.registrationOpen !== false
-            ? 'https://schema.org/InStock'
-            : 'https://schema.org/SoldOut',
+          availability:
+            event?.settings?.registrationOpen !== false
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/SoldOut',
           validFrom: '2026-01-01T00:00:00+05:30',
         },
         organizer: {
           '@id': `${siteUrl}/#organization`,
         },
+        ...(sponsorNodes.length > 0 ? { sponsor: sponsorNodes } : {}),
       },
+      faqNode,
     ],
+  };
+}
+
+export function generateBreadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
+  const siteUrl = getSiteUrl();
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.path.startsWith('http') ? item.path : `${siteUrl}${item.path.startsWith('/') ? '' : '/'}${item.path}`,
+    })),
   };
 }

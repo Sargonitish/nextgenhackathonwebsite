@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getSiteUrl } from '@/lib/seo';
+import { getSiteUrl, generateBreadcrumbJsonLd } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Find Team Registration Pass',
@@ -28,5 +28,18 @@ export default function FindRegistrationLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Find Registration Pass', path: '/find-registration' },
+  ]);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {children}
+    </>
+  );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getSiteUrl } from '@/lib/seo';
+import { getSiteUrl, generateBreadcrumbJsonLd } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Live Countdown & Projector Arena',
@@ -28,5 +28,18 @@ export default function LiveLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Live Countdown & Arena', path: '/live' },
+  ]);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {children}
+    </>
+  );
 }
