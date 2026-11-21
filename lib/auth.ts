@@ -5,7 +5,11 @@ import connectDB from './db';
 import Admin, { IAdmin } from '@/models/Admin';
 import Organizer, { IOrganizer } from '@/models/Organizer';
 
-const JWT_SECRET_STRING = process.env.JWT_SECRET || 'hackathon-fallback-secret-minimum-32-chars-long';
+const JWT_SECRET_STRING = process.env.JWT_SECRET || (
+  process.env.NODE_ENV === 'production'
+    ? (() => { throw new Error('FATAL: JWT_SECRET environment variable is missing in production.'); })()
+    : 'hackathon-fallback-secret-minimum-32-chars-long'
+);
 const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
 
 export interface SessionPayload extends JWTPayload {

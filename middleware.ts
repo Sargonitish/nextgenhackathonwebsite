@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-const JWT_SECRET_STRING = process.env.JWT_SECRET || 'hackathon-fallback-secret-minimum-32-chars-long';
+const JWT_SECRET_STRING = process.env.JWT_SECRET || (
+  process.env.NODE_ENV === 'production'
+    ? (() => { throw new Error('FATAL: JWT_SECRET environment variable is missing in production.'); })()
+    : 'hackathon-fallback-secret-minimum-32-chars-long'
+);
 const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
 
 interface JWTSession {
